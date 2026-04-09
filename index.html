@@ -48,8 +48,8 @@
 
     .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
     .slider-input-row { display: flex; align-items: center; gap: 6px; }
-    .slider-input-row input[type="range"] { flex: 1; accent-color: var(--accent); }
-    .slider-input-row input[type="number"] { width: 60px; min-width: 60px; }
+    .slider-input-row input[type="range"] { flex: 1; accent-color: var(--accent); min-width: 0; }
+    .slider-input-row input[type="number"] { width: 54px; min-width: 54px; flex-shrink: 0; }
 
     .toggle-label { display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--text); cursor: pointer; }
     .toggle-label input[type="checkbox"] { accent-color: var(--accent); width: 14px; height: 14px; }
@@ -66,11 +66,17 @@
     .action-btn.primary { background: var(--accent); color: #fff; border-color: var(--accent); }
     .action-btn.primary:hover { background: #357abd; }
 
-    /* Compound list — always-visible scrollbar */
-    .compound-list {
-      display: flex; flex-direction: column; gap: 4px;
-      max-height: 260px; overflow-y: scroll; padding-right: 3px;
+    /* Select all / deselect all row */
+    .sel-all-row { display: flex; gap: 5px; margin-bottom: 6px; }
+    .sel-all-btn {
+      flex: 1; font-size: 10px; font-weight: 600; padding: 4px 6px;
+      background: var(--bg); border: 1px solid var(--border2); border-radius: 4px;
+      color: var(--text-dim); cursor: pointer; transition: all 0.1s;
     }
+    .sel-all-btn:hover { border-color: var(--accent); color: var(--accent); }
+
+    /* Compound list */
+    .compound-list { display: flex; flex-direction: column; gap: 4px; max-height: 240px; overflow-y: scroll; padding-right: 3px; }
     .compound-list::-webkit-scrollbar { width: 5px; }
     .compound-list::-webkit-scrollbar-track { background: rgba(0,0,0,0.3); border-radius: 3px; }
     .compound-list::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 3px; }
@@ -85,9 +91,42 @@
     .compound-row input[type="checkbox"] { accent-color: var(--accent); flex-shrink: 0; }
     .compound-name { flex: 1; font-size: 11px; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
     .compound-formula { font-size: 10px; color: var(--text-dim); flex-shrink: 0; }
-    .compound-color-swatch { width: 16px; height: 16px; border-radius: 3px; border: 1px solid var(--border2); cursor: pointer; flex-shrink: 0; padding: 0; }
+
+    /* Custom color swatch button (replaces native input[type=color]) */
+    .color-swatch-btn {
+      width: 18px; height: 18px; border-radius: 4px; border: 2px solid rgba(255,255,255,0.2);
+      cursor: pointer; flex-shrink: 0; padding: 0; position: relative;
+      transition: border-color 0.1s; outline: none;
+    }
+    .color-swatch-btn:hover { border-color: rgba(255,255,255,0.6); }
+
     .compound-delete-btn { background: none; border: none; color: var(--text-dim); cursor: pointer; font-size: 14px; padding: 0 1px; flex-shrink: 0; line-height: 1; }
     .compound-delete-btn:hover { color: var(--red); }
+
+    /* Custom color picker popover */
+    .color-popover {
+      position: fixed; z-index: 2000; background: var(--surface);
+      border: 1px solid var(--border2); border-radius: 10px;
+      padding: 14px; box-shadow: 0 8px 32px rgba(0,0,0,0.5);
+      width: 220px;
+    }
+    .color-popover-title { font-size: 11px; font-weight: 700; color: var(--text-dim); margin-bottom: 10px; text-transform: uppercase; letter-spacing: 0.8px; }
+    .color-popover input[type="color"] {
+      width: 100%; height: 46px; border: 1px solid var(--border2); border-radius: 6px;
+      background: var(--bg); cursor: pointer; padding: 2px; margin-bottom: 8px;
+    }
+    .color-swatches { display: grid; grid-template-columns: repeat(7,1fr); gap: 5px; margin-bottom: 8px; }
+    .color-preset {
+      width: 100%; aspect-ratio: 1; border-radius: 4px; cursor: pointer;
+      border: 2px solid transparent; transition: border-color 0.1s;
+    }
+    .color-preset:hover { border-color: rgba(255,255,255,0.7); }
+    .color-hex-row { display: flex; gap: 6px; align-items: center; }
+    .color-hex-row input[type="text"] { flex: 1; font-size: 11px; font-family: monospace; }
+    .color-hex-row button { flex-shrink: 0; background: var(--accent); color: #fff; border: none; border-radius: 4px; padding: 5px 10px; font-size: 11px; font-weight: 600; cursor: pointer; }
+    .color-hex-row button:hover { background: #357abd; }
+    .color-popover-close { width: 100%; margin-top: 8px; background: var(--surface2); border: 1px solid var(--border2); color: var(--text-dim); border-radius: 5px; padding: 5px; font-size: 11px; cursor: pointer; }
+    .color-popover-close:hover { background: var(--border2); }
 
     /* Point cards */
     .points-list { display: flex; flex-direction: column; gap: 7px; }
@@ -104,13 +143,13 @@
     .point-toggles { display: flex; flex-direction: column; gap: 4px; margin-bottom: 6px; }
     .point-toggle { display: flex; align-items: center; gap: 6px; font-size: 11px; color: var(--text); cursor: pointer; }
     .point-toggle input[type="checkbox"] { accent-color: var(--accent); }
-    .point-color-row { display: flex; align-items: center; gap: 6px; margin-top: 5px; }
+    .point-color-row { display: flex; align-items: center; gap: 7px; margin-top: 5px; }
     .point-color-row label { margin: 0; font-size: 10px; color: var(--text-dim); flex-shrink: 0; }
-    .point-color-swatch { width: 30px; height: 20px; border-radius: 3px; border: 1px solid var(--border2); cursor: pointer; padding: 0; }
-    .point-thick-row { display: flex; align-items: center; gap: 5px; margin-top: 5px; }
+    /* Thickness row — constrained so number input never overflows */
+    .point-thick-row { display: flex; align-items: center; gap: 5px; margin-top: 5px; overflow: hidden; }
     .point-thick-row label { margin: 0; font-size: 10px; color: var(--text-dim); white-space: nowrap; flex-shrink: 0; }
-    .point-thick-row input[type="range"] { flex: 1; accent-color: var(--accent); }
-    .point-thick-row input[type="number"] { width: 50px; min-width: 50px; }
+    .point-thick-row input[type="range"] { flex: 1; min-width: 0; accent-color: var(--accent); }
+    .point-thick-row input[type="number"] { width: 46px; min-width: 46px; flex-shrink: 0; font-size: 11px; padding: 4px 5px; }
 
     /* Analysis card in sidebar */
     .analysis-card { background: var(--bg); border: 1px solid var(--border2); border-radius: 4px; padding: 9px 10px; font-size: 11px; line-height: 1.7; }
@@ -121,8 +160,12 @@
     .sat-row { display: flex; justify-content: space-between; gap: 8px; margin-top: 2px; }
     .sat-row span { color: var(--text-dim); }
     .sat-row b { color: var(--text); }
+    .analysis-action-row { display: flex; gap: 5px; margin-top: 6px; }
+    .analysis-action-row button { flex: 1; font-size: 10px; padding: 5px 4px; border-radius: 4px; cursor: pointer; border: 1px solid var(--border2); background: var(--surface2); color: var(--text-dim); }
+    .analysis-action-row button:hover { border-color: var(--accent); color: var(--accent); }
+    .analysis-action-row button.danger:hover { border-color: var(--red); color: var(--red); }
 
-    /* Intersections list — always-visible scrollbar */
+    /* Intersections */
     .intersect-list { display: flex; flex-direction: column; gap: 4px; max-height: 200px; overflow-y: scroll; margin-top: 6px; }
     .intersect-list::-webkit-scrollbar { width: 5px; }
     .intersect-list::-webkit-scrollbar-track { background: rgba(0,0,0,0.3); border-radius: 3px; }
@@ -141,7 +184,7 @@
     }
     .modal-box {
       background: var(--surface); border: 1px solid var(--border2); border-radius: 10px;
-      padding: 22px 24px; width: 400px; max-width: 95vw;
+      padding: 22px 24px; width: 420px; max-width: 95vw;
       box-shadow: 0 8px 40px rgba(0,0,0,0.5); max-height: 90vh; overflow-y: auto;
     }
     .modal-title { font-size: 15px; font-weight: 700; margin-bottom: 14px; }
@@ -149,6 +192,7 @@
     .modal-field label { margin-bottom: 4px; font-size: 11px; color: var(--text-dim); display: block; }
     .modal-field input[type="text"], .modal-field input[type="number"] { width: 100%; }
     .modal-note { font-size: 10px; color: var(--text-dim); margin-bottom: 6px; line-height: 1.5; }
+    .modal-validation { font-size: 10px; color: var(--red); margin-top: 3px; line-height: 1.4; min-height: 14px; }
     .modal-data-header { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-bottom: 4px; }
     .modal-data-header span { font-size: 10px; color: var(--text-dim); text-align: center; font-weight: 600; }
     .modal-data-grid { display: flex; flex-direction: column; gap: 4px; max-height: 180px; overflow-y: auto; margin-bottom: 6px; }
@@ -163,6 +207,25 @@
     .modal-btn.confirm:hover { background: #357abd; }
     .modal-btn.cancel { background: var(--surface2); color: var(--text-dim); border: 1px solid var(--border2); }
     .modal-btn.cancel:hover { background: var(--border2); }
+
+    /* Confirmation dialog for "keep/replace" analysis */
+    .confirm-dialog {
+      position: fixed; top: 50%; left: 50%; transform: translate(-50%,-50%);
+      background: var(--surface); border: 1px solid var(--border2); border-radius: 10px;
+      padding: 20px 22px; width: 320px; z-index: 3000;
+      box-shadow: 0 8px 40px rgba(0,0,0,0.6);
+    }
+    .confirm-dialog h3 { font-size: 14px; margin-bottom: 8px; }
+    .confirm-dialog p { font-size: 11px; color: var(--text-dim); margin-bottom: 14px; line-height: 1.5; }
+    .confirm-dialog-btns { display: flex; gap: 8px; }
+    .confirm-dialog-btns button { flex: 1; padding: 7px; border-radius: 5px; font-size: 11px; font-weight: 600; cursor: pointer; border: none; }
+    .confirm-btn-keep { background: var(--surface2); color: var(--text); border: 1px solid var(--border2) !important; }
+    .confirm-btn-keep:hover { background: var(--border2); }
+    .confirm-btn-replace { background: var(--accent); color: #fff; }
+    .confirm-btn-replace:hover { background: #357abd; }
+    .confirm-btn-cancel { background: var(--surface2); color: var(--text-dim); border: 1px solid var(--border2) !important; }
+    .confirm-btn-cancel:hover { background: var(--border2); }
+    .confirm-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.4); z-index: 2999; }
 
     /* Alert */
     .styled-alert {
@@ -194,7 +257,7 @@
       <p>Interactive solubility curves for chemistry instruction</p>
     </div>
   </div>
-  <div class="app-version">v1.1</div>
+  <div class="app-version">v1.2</div>
 </header>
 
 <div class="app-body">
@@ -203,6 +266,10 @@
     <!-- COMPOUNDS -->
     <div class="control-group">
       <div class="group-title">COMPOUNDS</div>
+      <div class="sel-all-row">
+        <button class="sel-all-btn" onclick="SC.selectAll()">Select All</button>
+        <button class="sel-all-btn" onclick="SC.deselectAll()">Deselect All</button>
+      </div>
       <div class="compound-list" id="compound-list"></div>
       <div class="display-divider"></div>
       <div class="toggle-row">
@@ -226,7 +293,7 @@
       </div>
       <label>Water Amount (g)</label>
       <input type="number" id="water-amount" value="100" min="1" step="10" />
-      <div class="mini-note">Database values are per 100 g H₂O. Changing this scales the y-axis labels (e.g. 200 g → 2× saturation values).</div>
+      <div class="mini-note">Database values are per 100 g H₂O. Changing this scales the y-axis labels proportionally.</div>
       <div class="two-col" style="margin-top:4px;">
         <div><label>Sol. Min (y)</label><input type="number" id="y-min" value="0" step="10" /></div>
         <div><label>Sol. Max (y)</label><input type="number" id="y-max" value="260" step="10" /></div>
@@ -283,7 +350,7 @@
       <label>Dotted line thickness</label>
       <div class="slider-input-row">
         <input type="range" id="default-line-thick-range" min="0.5" max="4" step="0.5" value="1" />
-        <input type="number" id="default-line-thick-num" value="1" min="0.5" max="4" step="0.5" style="width:56px;" />
+        <input type="number" id="default-line-thick-num" value="1" min="0.5" max="4" step="0.5" style="width:54px;" />
       </div>
       <button class="action-btn primary" onclick="SC.addPointManual()" style="margin-top:8px;">＋ Add Point</button>
       <div class="display-divider"></div>
@@ -293,6 +360,11 @@
     <!-- SATURATION ANALYSIS -->
     <div class="control-group">
       <div class="group-title">SATURATION ANALYSIS</div>
+      <label>Use existing plotted point</label>
+      <select id="sa-from-point">
+        <option value="">-- or enter manually below --</option>
+      </select>
+      <div class="display-divider"></div>
       <div class="two-col">
         <div><label>Temperature</label><input type="number" id="sa-temp" placeholder="e.g. 50" /></div>
         <div><label>Dissolved (g)</label><input type="number" id="sa-sol" placeholder="e.g. 70" /></div>
@@ -328,7 +400,7 @@
   </aside>
 
   <div class="preview-panel">
-    <div class="preview-label">Live Preview — click the graph to place points</div>
+    <div class="preview-label">Live Preview — click the graph to place points · drag analysis cards to reposition them</div>
     <div class="canvas-scroll-wrapper">
       <canvas id="solubility-canvas"></canvas>
     </div>
@@ -340,12 +412,13 @@
   <div class="modal-box">
     <div class="modal-title">➕ Add Custom Compound</div>
     <div class="modal-field">
-      <label>Compound Name</label>
-      <input type="text" id="modal-name" placeholder="e.g. Potassium Nitrate" />
+      <label>Compound Name (IUPAC — e.g. "Potassium Nitrate")</label>
+      <input type="text" id="modal-name" placeholder="e.g. Potassium Nitrate" oninput="SC.validateIUPACName()" />
+      <div class="modal-validation" id="modal-name-error"></div>
     </div>
     <div class="modal-field">
-      <label>Formula (Unicode subscripts OK, or plain text)</label>
-      <input type="text" id="modal-formula" placeholder="e.g. KNO₃ or KNO3" />
+      <label>Formula — subscript digits are auto-converted (e.g. H2O → H₂O)</label>
+      <input type="text" id="modal-formula" placeholder="e.g. KNO3 or KNO₃" />
     </div>
     <div class="modal-field">
       <label>Line Color</label>
@@ -364,36 +437,186 @@
 
 <script>
 // ─────────────────────────────────────────────────────────
-// SOLUBILITY DATA (all per 100 g H₂O at °C)
+// FORMULA HELPER — convert plain-text subscripts to Unicode
+// e.g. "KNO3" → "KNO₃",  "H2SO4" → "H₂SO₄"
+// Leaves existing Unicode subscripts untouched.
+// ─────────────────────────────────────────────────────────
+const SUB_MAP = {'0':'\u2080','1':'\u2081','2':'\u2082','3':'\u2083','4':'\u2084',
+                 '5':'\u2085','6':'\u2086','7':'\u2087','8':'\u2088','9':'\u2089'};
+function toSubscripts(str) {
+  // Don't double-convert already-unicode subscript chars
+  return str.replace(/(?<![₀₁₂₃₄₅₆₇₈₉])[0-9](?![₀₁₂₃₄₅₆₇₈₉])/g, d => SUB_MAP[d]||d);
+}
+
+// ─────────────────────────────────────────────────────────
+// IUPAC INORGANIC NAMING VALIDATION
+// Rules encoded: cation name + anion name, common patterns,
+// Roman numerals for variable-valence metals, hydrates,
+// and common acceptable exceptions (Water, Sugar, etc.)
+// ─────────────────────────────────────────────────────────
+const IUPAC_CATIONS = [
+  'hydrogen','lithium','sodium','potassium','rubidium','cesium','magnesium','calcium',
+  'strontium','barium','aluminium','aluminum','silver','zinc','copper','iron','cobalt',
+  'nickel','manganese','chromium','lead','tin','mercury','gold','platinum','titanium',
+  'vanadium','tungsten','molybdenum','cerium','lanthanum','ammonium','hydronium'
+];
+const IUPAC_ANIONS = [
+  'chloride','bromide','iodide','fluoride','oxide','sulfide','nitride','phosphide',
+  'sulfate','sulfite','nitrate','nitrite','phosphate','phosphite','carbonate','bicarbonate',
+  'hydroxide','cyanide','permanganate','dichromate','chromate','acetate','oxalate',
+  'hypochlorite','chlorite','chlorate','perchlorate','thiosulfate','iodate','periodate',
+  'silicate','borate','arsenate','arsenite','selenate','selenide','telluride','peroxide',
+  'superoxide','hypophosphite','phosphonate','formate','propanoate','butanoate'
+];
+const IUPAC_PREFIXES_COVALENT = ['mono','di','tri','tetra','penta','hexa','hepta','octa','nona','deca'];
+const ROMAN_PATTERN = /\((i{1,3}|iv|vi{0,3}|ix|xl|l|xc|c|cd|d|cm|[ivxlcdm]+)\)/i;
+const ACCEPTED_EXCEPTIONS = ['water','sucrose','sugar','glucose','fructose','lactose','glycine','urea','ethanol','methanol'];
+
+function validateIUPACName(name) {
+  if (!name || name.trim().length < 2) return { ok: false, msg: '' };
+  const lower = name.trim().toLowerCase();
+  // Accept common exceptions
+  if (ACCEPTED_EXCEPTIONS.some(e => lower.includes(e))) return { ok: true, msg: '' };
+  // Accept if it contains a valid cation
+  const hasCation = IUPAC_CATIONS.some(c => lower.includes(c));
+  // Accept if it contains a valid anion
+  const hasAnion = IUPAC_ANIONS.some(a => lower.includes(a));
+  // Accept covalent binary names (e.g. "Carbon Dioxide")
+  const hasCovalentPrefix = IUPAC_PREFIXES_COVALENT.some(p => lower.startsWith(p) || lower.includes(' '+p));
+  // Accept names with Roman numeral stock notation
+  const hasRoman = ROMAN_PATTERN.test(name);
+
+  if (hasCation && (hasAnion || hasCovalentPrefix)) return { ok: true, msg: '' };
+  if (hasAnion) return { ok: true, msg: '' };
+  if (hasCovalentPrefix && lower.includes('ide')) return { ok: true, msg: '' };
+  if (hasRoman && hasCation) return { ok: true, msg: '' };
+
+  // Build helpful message
+  if (!hasCation && !hasAnion) {
+    return { ok: false, msg: 'Name does not appear to follow IUPAC conventions. Example: "Sodium Chloride", "Iron(III) Sulfate", "Dinitrogen Pentoxide".' };
+  }
+  if (hasCation && !hasAnion) {
+    return { ok: false, msg: 'Recognized a cation but no anion. Add the anion (e.g. "…chloride", "…sulfate", "…nitrate").' };
+  }
+  return { ok: true, msg: '' };
+}
+
+// ─────────────────────────────────────────────────────────
+// CUSTOM COLOR PICKER POPOVER
+// ─────────────────────────────────────────────────────────
+const PRESET_COLORS = [
+  '#e53935','#e91e63','#9c27b0','#3f51b5','#1e88e5','#039be5','#00acc1',
+  '#00897b','#43a047','#7cb342','#c0ca33','#fdd835','#ffb300','#fb8c00',
+  '#f4511e','#6d4c41','#546e7a','#78909c','#9e9e9e','#000000','#ffffff'
+];
+
+let _colorPopover = null;
+let _colorCallback = null;
+
+function openColorPicker(anchorEl, currentColor, onColorChange) {
+  closeColorPicker();
+  _colorCallback = onColorChange;
+
+  const pop = document.createElement('div');
+  pop.className = 'color-popover';
+  pop.id = 'color-popover';
+
+  let hexVal = currentColor;
+  pop.innerHTML = `
+    <div class="color-popover-title">Choose Color</div>
+    <input type="color" id="cp-native" value="${currentColor}" />
+    <div class="color-swatches" id="cp-swatches"></div>
+    <div class="color-hex-row">
+      <input type="text" id="cp-hex" value="${currentColor}" maxlength="7" placeholder="#rrggbb" />
+      <button id="cp-hex-apply">Apply</button>
+    </div>
+    <button class="color-popover-close" id="cp-close">Done</button>
+  `;
+
+  document.body.appendChild(pop);
+  _colorPopover = pop;
+
+  // Position near anchor
+  const r = anchorEl.getBoundingClientRect();
+  let top = r.bottom + 6, left = r.left;
+  if (left + 220 > window.innerWidth) left = window.innerWidth - 228;
+  if (top + 280 > window.innerHeight) top = r.top - 286;
+  pop.style.top = top + 'px';
+  pop.style.left = left + 'px';
+
+  // Preset swatches
+  const swatchGrid = pop.querySelector('#cp-swatches');
+  PRESET_COLORS.forEach(c => {
+    const s = document.createElement('div');
+    s.className = 'color-preset';
+    s.style.background = c;
+    s.title = c;
+    if (c === currentColor) s.style.borderColor = 'rgba(255,255,255,0.9)';
+    s.addEventListener('click', () => { applyColor(c); });
+    swatchGrid.appendChild(s);
+  });
+
+  function applyColor(c) {
+    hexVal = c;
+    pop.querySelector('#cp-native').value = c;
+    pop.querySelector('#cp-hex').value = c;
+    anchorEl.style.background = c;
+    _colorCallback && _colorCallback(c);
+  }
+
+  pop.querySelector('#cp-native').addEventListener('input', e => applyColor(e.target.value));
+  pop.querySelector('#cp-hex-apply').addEventListener('click', () => {
+    const v = pop.querySelector('#cp-hex').value.trim();
+    if (/^#[0-9a-fA-F]{6}$/.test(v)) applyColor(v);
+  });
+  pop.querySelector('#cp-hex').addEventListener('keydown', e => { if(e.key==='Enter') pop.querySelector('#cp-hex-apply').click(); });
+  pop.querySelector('#cp-close').addEventListener('click', closeColorPicker);
+
+  // Close on outside click
+  setTimeout(() => {
+    document.addEventListener('mousedown', _outsideClick);
+  }, 10);
+}
+
+function _outsideClick(e) {
+  if (_colorPopover && !_colorPopover.contains(e.target)) closeColorPicker();
+}
+function closeColorPicker() {
+  if (_colorPopover) { _colorPopover.remove(); _colorPopover = null; }
+  document.removeEventListener('mousedown', _outsideClick);
+}
+
+// ─────────────────────────────────────────────────────────
+// SOLUBILITY DATA (per 100 g H₂O, °C)
 // ─────────────────────────────────────────────────────────
 const BUILTIN_DATA = [
-  { id:"KNO3",     name:"Potassium Nitrate",    formula:"KNO\u2083",           defaultColor:"#e53935", data:[[0,13.3],[10,20.9],[20,31.6],[30,45.8],[40,63.9],[50,85.5],[60,110],[70,138],[80,169],[90,202],[100,246]] },
-  { id:"NaCl",     name:"Sodium Chloride",      formula:"NaCl",                defaultColor:"#1e88e5", data:[[0,35.7],[10,35.8],[20,36.0],[30,36.3],[40,36.6],[50,37.0],[60,37.3],[70,37.8],[80,38.4],[90,39.0],[100,39.8]] },
-  { id:"KCl",      name:"Potassium Chloride",   formula:"KCl",                 defaultColor:"#43a047", data:[[0,27.6],[10,31.0],[20,34.0],[30,37.0],[40,40.0],[50,42.6],[60,45.5],[70,48.3],[80,51.1],[90,54.0],[100,56.7]] },
-  { id:"NH4Cl",    name:"Ammonium Chloride",    formula:"NH\u2084Cl",           defaultColor:"#8e24aa", data:[[0,29.4],[10,33.3],[20,37.2],[30,41.4],[40,45.8],[50,50.4],[60,55.2],[70,60.2],[80,65.6],[90,71.3],[100,77.3]] },
-  { id:"KBr",      name:"Potassium Bromide",    formula:"KBr",                 defaultColor:"#f4511e", data:[[0,53.5],[10,59.5],[20,65.2],[30,70.6],[40,75.5],[50,80.2],[60,85.5],[70,90.0],[80,95.0],[90,99.2],[100,104]] },
-  { id:"NaNO3",    name:"Sodium Nitrate",       formula:"NaNO\u2083",           defaultColor:"#00acc1", data:[[0,73.0],[10,80.0],[20,87.6],[30,96.0],[40,104],[50,114],[60,124],[70,134],[80,148],[90,163],[100,180]] },
-  { id:"CuSO4",    name:"Copper(II) Sulfate",   formula:"CuSO\u2084",           defaultColor:"#039be5", data:[[0,14.3],[10,17.4],[20,20.7],[30,25.0],[40,28.5],[50,33.3],[60,40.0],[70,47.0],[80,55.0],[90,63.0],[100,75.4]] },
-  { id:"NaAc",     name:"Sodium Acetate",       formula:"NaC\u2082H\u2083O\u2082", defaultColor:"#6d4c41", data:[[0,36.2],[10,40.8],[20,46.5],[30,54.5],[40,65.5],[50,82.3],[60,139],[70,153],[80,170],[90,188],[100,208]] },
-  { id:"Ce2SO43",  name:"Cerium(III) Sulfate",  formula:"Ce\u2082(SO\u2084)\u2083", defaultColor:"#546e7a", data:[[0,21.4],[10,17.0],[20,10.1],[30,7.0],[40,5.0],[50,3.9],[60,3.3],[70,2.8],[80,2.4],[90,2.1],[100,1.8]] },
-  { id:"Li2SO4",   name:"Lithium Sulfate",      formula:"Li\u2082SO\u2084",      defaultColor:"#c0ca33", data:[[0,35.5],[10,35.0],[20,34.2],[30,33.4],[40,32.6],[50,31.9],[60,31.0],[70,30.1],[80,29.3],[90,28.4],[100,27.6]] },
-  { id:"KI",       name:"Potassium Iodide",     formula:"KI",                  defaultColor:"#ff7043", data:[[0,128],[10,136],[20,144],[30,152],[40,160],[50,168],[60,176],[70,184],[80,192],[90,200],[100,208]] },
-  { id:"CaOH2",    name:"Calcium Hydroxide",    formula:"Ca(OH)\u2082",          defaultColor:"#26a69a", data:[[0,0.189],[10,0.182],[20,0.173],[30,0.160],[40,0.141],[50,0.128],[60,0.116],[70,0.106],[80,0.094],[90,0.085],[100,0.077]] },
-  { id:"NaOH",     name:"Sodium Hydroxide",     formula:"NaOH",                defaultColor:"#ab47bc", data:[[0,42.0],[10,51.0],[20,109],[30,119],[40,129],[50,145],[60,174],[70,300],[80,330],[90,370],[100,347]] },
-  { id:"NH4NO3",   name:"Ammonium Nitrate",     formula:"NH\u2084NO\u2083",      defaultColor:"#ef5350", data:[[0,118],[10,150],[20,190],[30,242],[40,297],[50,344],[60,421],[70,499],[80,580],[90,740],[100,871]] },
-  { id:"sucrose",  name:"Sucrose (Sugar)",      formula:"C\u2081\u2082H\u2082\u2082O\u2081\u2081", defaultColor:"#ffa000", data:[[0,179],[10,190],[20,204],[30,219],[40,238],[50,260],[60,287],[70,320],[80,362],[90,415],[100,487]] },
-  { id:"SO2",      name:"Sulfur Dioxide",       formula:"SO\u2082",             defaultColor:"#78909c", data:[[0,22.8],[10,16.2],[20,11.3],[30,7.8],[40,5.4],[50,3.7],[60,2.5],[70,1.6],[80,1.0],[90,0.6],[100,0.3]] },
-  { id:"AgNO3",    name:"Silver Nitrate",       formula:"AgNO\u2083",           defaultColor:"#9e9e9e", data:[[0,122],[10,167],[20,222],[30,300],[40,376],[50,455],[60,525],[70,608],[80,669],[90,723],[100,952]] },
-  { id:"MgSO4",    name:"Magnesium Sulfate",    formula:"MgSO\u2084",           defaultColor:"#66bb6a", data:[[0,26.9],[10,30.9],[20,33.7],[30,38.9],[40,44.5],[50,50.9],[60,54.6],[70,56.1],[80,55.8],[90,54.1],[100,50.4]] },
-  { id:"Na2SO4",   name:"Sodium Sulfate",       formula:"Na\u2082SO\u2084",      defaultColor:"#42a5f5", data:[[0,4.76],[10,9.1],[20,19.5],[30,40.8],[40,48.8],[50,46.7],[60,45.3],[70,44.1],[80,43.7],[90,42.7],[100,42.5]] },
-  { id:"K2Cr2O7",  name:"Potassium Dichromate", formula:"K\u2082Cr\u2082O\u2087", defaultColor:"#e64a19", data:[[0,4.7],[10,8.1],[20,12.3],[30,18.1],[40,26.3],[50,37.0],[60,45.6],[70,56.3],[80,70.2],[90,82.0],[100,102]] }
+  { id:"KNO3",    name:"Potassium Nitrate",    formula:"KNO\u2083",              defaultColor:"#e53935", data:[[0,13.3],[10,20.9],[20,31.6],[30,45.8],[40,63.9],[50,85.5],[60,110],[70,138],[80,169],[90,202],[100,246]] },
+  { id:"NaCl",    name:"Sodium Chloride",      formula:"NaCl",                   defaultColor:"#1e88e5", data:[[0,35.7],[10,35.8],[20,36.0],[30,36.3],[40,36.6],[50,37.0],[60,37.3],[70,37.8],[80,38.4],[90,39.0],[100,39.8]] },
+  { id:"KCl",     name:"Potassium Chloride",   formula:"KCl",                    defaultColor:"#43a047", data:[[0,27.6],[10,31.0],[20,34.0],[30,37.0],[40,40.0],[50,42.6],[60,45.5],[70,48.3],[80,51.1],[90,54.0],[100,56.7]] },
+  { id:"NH4Cl",   name:"Ammonium Chloride",    formula:"NH\u2084Cl",              defaultColor:"#8e24aa", data:[[0,29.4],[10,33.3],[20,37.2],[30,41.4],[40,45.8],[50,50.4],[60,55.2],[70,60.2],[80,65.6],[90,71.3],[100,77.3]] },
+  { id:"KBr",     name:"Potassium Bromide",    formula:"KBr",                    defaultColor:"#f4511e", data:[[0,53.5],[10,59.5],[20,65.2],[30,70.6],[40,75.5],[50,80.2],[60,85.5],[70,90.0],[80,95.0],[90,99.2],[100,104]] },
+  { id:"NaNO3",   name:"Sodium Nitrate",       formula:"NaNO\u2083",              defaultColor:"#00acc1", data:[[0,73.0],[10,80.0],[20,87.6],[30,96.0],[40,104],[50,114],[60,124],[70,134],[80,148],[90,163],[100,180]] },
+  { id:"CuSO4",   name:"Copper(II) Sulfate",   formula:"CuSO\u2084",              defaultColor:"#039be5", data:[[0,14.3],[10,17.4],[20,20.7],[30,25.0],[40,28.5],[50,33.3],[60,40.0],[70,47.0],[80,55.0],[90,63.0],[100,75.4]] },
+  { id:"NaAc",    name:"Sodium Acetate",       formula:"NaC\u2082H\u2083O\u2082", defaultColor:"#6d4c41", data:[[0,36.2],[10,40.8],[20,46.5],[30,54.5],[40,65.5],[50,82.3],[60,139],[70,153],[80,170],[90,188],[100,208]] },
+  { id:"Ce2SO43", name:"Cerium(III) Sulfate",  formula:"Ce\u2082(SO\u2084)\u2083",defaultColor:"#546e7a", data:[[0,21.4],[10,17.0],[20,10.1],[30,7.0],[40,5.0],[50,3.9],[60,3.3],[70,2.8],[80,2.4],[90,2.1],[100,1.8]] },
+  { id:"Li2SO4",  name:"Lithium Sulfate",      formula:"Li\u2082SO\u2084",        defaultColor:"#c0ca33", data:[[0,35.5],[10,35.0],[20,34.2],[30,33.4],[40,32.6],[50,31.9],[60,31.0],[70,30.1],[80,29.3],[90,28.4],[100,27.6]] },
+  { id:"KI",      name:"Potassium Iodide",     formula:"KI",                     defaultColor:"#ff7043", data:[[0,128],[10,136],[20,144],[30,152],[40,160],[50,168],[60,176],[70,184],[80,192],[90,200],[100,208]] },
+  { id:"CaOH2",   name:"Calcium Hydroxide",    formula:"Ca(OH)\u2082",            defaultColor:"#26a69a", data:[[0,0.189],[10,0.182],[20,0.173],[30,0.160],[40,0.141],[50,0.128],[60,0.116],[70,0.106],[80,0.094],[90,0.085],[100,0.077]] },
+  { id:"NaOH",    name:"Sodium Hydroxide",     formula:"NaOH",                   defaultColor:"#ab47bc", data:[[0,42.0],[10,51.0],[20,109],[30,119],[40,129],[50,145],[60,174],[70,300],[80,330],[90,370],[100,347]] },
+  { id:"NH4NO3",  name:"Ammonium Nitrate",     formula:"NH\u2084NO\u2083",        defaultColor:"#ef5350", data:[[0,118],[10,150],[20,190],[30,242],[40,297],[50,344],[60,421],[70,499],[80,580],[90,740],[100,871]] },
+  { id:"sucrose", name:"Sucrose (Sugar)",      formula:"C\u2081\u2082H\u2082\u2082O\u2081\u2081", defaultColor:"#ffa000", data:[[0,179],[10,190],[20,204],[30,219],[40,238],[50,260],[60,287],[70,320],[80,362],[90,415],[100,487]] },
+  { id:"SO2",     name:"Sulfur Dioxide",       formula:"SO\u2082",               defaultColor:"#78909c", data:[[0,22.8],[10,16.2],[20,11.3],[30,7.8],[40,5.4],[50,3.7],[60,2.5],[70,1.6],[80,1.0],[90,0.6],[100,0.3]] },
+  { id:"AgNO3",   name:"Silver Nitrate",       formula:"AgNO\u2083",             defaultColor:"#9e9e9e", data:[[0,122],[10,167],[20,222],[30,300],[40,376],[50,455],[60,525],[70,608],[80,669],[90,723],[100,952]] },
+  { id:"MgSO4",   name:"Magnesium Sulfate",    formula:"MgSO\u2084",             defaultColor:"#66bb6a", data:[[0,26.9],[10,30.9],[20,33.7],[30,38.9],[40,44.5],[50,50.9],[60,54.6],[70,56.1],[80,55.8],[90,54.1],[100,50.4]] },
+  { id:"Na2SO4",  name:"Sodium Sulfate",       formula:"Na\u2082SO\u2084",        defaultColor:"#42a5f5", data:[[0,4.76],[10,9.1],[20,19.5],[30,40.8],[40,48.8],[50,46.7],[60,45.3],[70,44.1],[80,43.7],[90,42.7],[100,42.5]] },
+  { id:"K2Cr2O7", name:"Potassium Dichromate", formula:"K\u2082Cr\u2082O\u2087", defaultColor:"#e64a19", data:[[0,4.7],[10,8.1],[20,12.3],[30,18.1],[40,26.3],[50,37.0],[60,45.6],[70,56.3],[80,70.2],[90,82.0],[100,102]] }
 ];
 
 function loadCustomCompounds() {
-  try { const s = localStorage.getItem('sc_custom_compounds'); return s ? JSON.parse(s) : []; } catch(e) { return []; }
+  try { const s=localStorage.getItem('sc_custom_compounds'); return s?JSON.parse(s):[]; } catch(e){ return []; }
 }
 function saveCustomCompounds(arr) {
-  try { localStorage.setItem('sc_custom_compounds', JSON.stringify(arr)); } catch(e) {}
+  try { localStorage.setItem('sc_custom_compounds', JSON.stringify(arr)); } catch(e){}
 }
 
 let SOLUBILITY_DATA = [...BUILTIN_DATA, ...loadCustomCompounds()];
@@ -401,38 +624,29 @@ let SOLUBILITY_DATA = [...BUILTIN_DATA, ...loadCustomCompounds()];
 // ─────────────────────────────────────────────────────────
 // TEMPERATURE CONVERSIONS
 // ─────────────────────────────────────────────────────────
-function toDisplayTemp(tC, scale) {
-  if (scale === 'F') return tC * 9/5 + 32;
-  if (scale === 'K') return tC + 273.15;
-  return tC;
-}
-function fromDisplayTemp(tD, scale) {
-  if (scale === 'F') return (tD - 32) * 5/9;
-  if (scale === 'K') return tD - 273.15;
-  return tD;
-}
-function tempUnit(scale) { return scale === 'C' ? '°C' : scale === 'F' ? '°F' : 'K'; }
+function toDisplayTemp(tC,scale){ if(scale==='F') return tC*9/5+32; if(scale==='K') return tC+273.15; return tC; }
+function fromDisplayTemp(tD,scale){ if(scale==='F') return (tD-32)*5/9; if(scale==='K') return tD-273.15; return tD; }
+function tempUnit(scale){ return scale==='C'?'°C':scale==='F'?'°F':'K'; }
 
 // ─────────────────────────────────────────────────────────
 // CATMULL-ROM SPLINE
 // ─────────────────────────────────────────────────────────
-function crPoint(p0, p1, p2, p3, t) {
-  const t2=t*t, t3=t2*t;
+function crPoint(p0,p1,p2,p3,t){
+  const t2=t*t,t3=t2*t;
   return {
-    x: 0.5*((2*p1.x)+(-p0.x+p2.x)*t+(2*p0.x-5*p1.x+4*p2.x-p3.x)*t2+(-p0.x+3*p1.x-3*p2.x+p3.x)*t3),
-    y: 0.5*((2*p1.y)+(-p0.y+p2.y)*t+(2*p0.y-5*p1.y+4*p2.y-p3.y)*t2+(-p0.y+3*p1.y-3*p2.y+p3.y)*t3)
+    x:0.5*((2*p1.x)+(-p0.x+p2.x)*t+(2*p0.x-5*p1.x+4*p2.x-p3.x)*t2+(-p0.x+3*p1.x-3*p2.x+p3.x)*t3),
+    y:0.5*((2*p1.y)+(-p0.y+p2.y)*t+(2*p0.y-5*p1.y+4*p2.y-p3.y)*t2+(-p0.y+3*p1.y-3*p2.y+p3.y)*t3)
   };
 }
 
-// Linear interpolation of compound data (per 100g water, °C)
-function interpSol(compound, tC) {
-  const pts = compound.data;
-  if (tC <= pts[0][0]) return pts[0][1];
-  if (tC >= pts[pts.length-1][0]) return pts[pts.length-1][1];
-  for (let i = 0; i < pts.length-1; i++) {
-    if (tC >= pts[i][0] && tC <= pts[i+1][0]) {
-      const f = (tC - pts[i][0]) / (pts[i+1][0] - pts[i][0]);
-      return pts[i][1] + f * (pts[i+1][1] - pts[i][1]);
+function interpSol(compound,tC){
+  const pts=compound.data;
+  if(tC<=pts[0][0]) return pts[0][1];
+  if(tC>=pts[pts.length-1][0]) return pts[pts.length-1][1];
+  for(let i=0;i<pts.length-1;i++){
+    if(tC>=pts[i][0]&&tC<=pts[i+1][0]){
+      const f=(tC-pts[i][0])/(pts[i+1][0]-pts[i][0]);
+      return pts[i][1]+f*(pts[i+1][1]-pts[i][1]);
     }
   }
   return null;
@@ -456,7 +670,7 @@ const SC = (() => {
     yMin: 0, yMax: 260,
     xTick: 10, yTick: 20,
     zoom: 100, fontSize: 12,
-    points: [],
+    points: [],      // each: { xDisp, yScaled, showCoord, showDotted, dotColor, lineColor, lineThick, analysisData, showAnalysisOnGraph, cardOffsetX, cardOffsetY }
     transparentBg: false,
   };
 
@@ -464,298 +678,308 @@ const SC = (() => {
 
   const PAD = { left: 62, right: 40, top: 30, bottom: 56 };
 
-  function getSize() {
-    const z = state.zoom/100;
-    return { w: Math.round(760*z), h: Math.round(520*z) };
-  }
-  function getDims() {
-    const z = state.zoom/100;
+  // ── Drag state for analysis cards ──
+  let drag = null; // { ptIdx, startMouseX, startMouseY, startOffX, startOffY }
+
+  function getSize(){ const z=state.zoom/100; return { w:Math.round(760*z), h:Math.round(520*z) }; }
+  function getDims(){
+    const z=state.zoom/100;
     const pL=PAD.left*z, pT=PAD.top*z;
-    const pW=canvas.width-pL-PAD.right*z;
-    const pH=canvas.height-pT-PAD.bottom*z;
-    return { z, pL, pT, pW, pH };
+    return { z, pL, pT, pW:canvas.width-pL-PAD.right*z, pH:canvas.height-pT-PAD.bottom*z };
   }
-  // Convert display-temp → canvas x
-  function cxOf(tDisp, d) { return d.pL + (tDisp-state.xMin)/(state.xMax-state.xMin)*d.pW; }
-  // Convert scaled-sol (per waterAmount g water) → canvas y
-  function cyOf(solScaled, d) { return d.pT + (1-(solScaled-state.yMin*state.waterAmount/100)/((state.yMax-state.yMin)*state.waterAmount/100))*d.pH; }
 
   // ── BUILD COMPOUND LIST ──
-  function buildCompoundList() {
-    const list = document.getElementById('compound-list');
-    list.innerHTML = '';
-    SOLUBILITY_DATA.forEach(c => {
-      const isCustom = !BUILTIN_DATA.find(b => b.id === c.id);
-      const row = document.createElement('div');
-      row.className = 'compound-row' + (state.selected.has(c.id) ? ' selected' : '');
-      row.innerHTML = `
-        <input type="checkbox" ${state.selected.has(c.id) ? 'checked' : ''} />
-        <div class="compound-name" title="${c.name}">${c.name}</div>
-        <div class="compound-formula">${c.formula}</div>
-        <input type="color" class="compound-color-swatch" value="${state.colors[c.id]||c.defaultColor}" title="Line color" />
-        ${isCustom ? '<button class="compound-delete-btn" title="Remove">×</button>' : ''}
-      `;
-      const chk = row.querySelector('input[type="checkbox"]');
-      chk.addEventListener('change', () => {
-        if (chk.checked) state.selected.add(c.id); else state.selected.delete(c.id);
-        row.classList.toggle('selected', chk.checked);
+  function buildCompoundList(){
+    const list=document.getElementById('compound-list');
+    list.innerHTML='';
+    SOLUBILITY_DATA.forEach(c=>{
+      const isCustom=!BUILTIN_DATA.find(b=>b.id===c.id);
+      const row=document.createElement('div');
+      row.className='compound-row'+(state.selected.has(c.id)?' selected':'');
+
+      const chk=document.createElement('input'); chk.type='checkbox'; if(state.selected.has(c.id)) chk.checked=true;
+      const nm=document.createElement('div'); nm.className='compound-name'; nm.title=c.name; nm.textContent=c.name;
+      const fm=document.createElement('div'); fm.className='compound-formula'; fm.textContent=c.formula;
+
+      // Custom swatch button — opens our color picker
+      const sw=document.createElement('button');
+      sw.className='color-swatch-btn';
+      sw.style.background=state.colors[c.id]||c.defaultColor;
+      sw.title='Change line color';
+      sw.addEventListener('click', e=>{
+        e.stopPropagation();
+        openColorPicker(sw, state.colors[c.id]||c.defaultColor, (col)=>{
+          state.colors[c.id]=col; sw.style.background=col; draw();
+        });
+      });
+
+      chk.addEventListener('change',()=>{
+        if(chk.checked) state.selected.add(c.id); else state.selected.delete(c.id);
+        row.classList.toggle('selected',chk.checked);
         updateSaList(); draw();
       });
-      const col = row.querySelector('input[type="color"]');
-      col.addEventListener('input', () => { state.colors[c.id] = col.value; draw(); });
-      col.addEventListener('click', e => e.stopPropagation());
-      if (isCustom) {
-        row.querySelector('.compound-delete-btn').addEventListener('click', e => {
-          e.stopPropagation(); removeCustom(c.id);
-        });
+      row.addEventListener('click',e=>{ if(e.target.tagName!=='BUTTON') chk.click(); });
+
+      row.appendChild(chk); row.appendChild(nm); row.appendChild(fm); row.appendChild(sw);
+
+      if(isCustom){
+        const db=document.createElement('button'); db.className='compound-delete-btn'; db.title='Remove'; db.textContent='×';
+        db.addEventListener('click',e=>{ e.stopPropagation(); removeCustom(c.id); });
+        row.appendChild(db);
       }
-      row.addEventListener('click', e => { if (e.target.tagName !== 'INPUT' && e.target.tagName !== 'BUTTON') chk.click(); });
       list.appendChild(row);
     });
   }
 
-  function updateSaList() {
-    const sel = document.getElementById('sa-compound');
-    const prev = sel.value;
-    sel.innerHTML = '<option value="">-- select compound --</option>';
-    SOLUBILITY_DATA.filter(c => state.selected.has(c.id)).forEach(c => {
-      const o = document.createElement('option');
-      o.value = c.id; o.textContent = `${c.name} (${c.formula})`;
+  function selectAll(){ SOLUBILITY_DATA.forEach(c=>state.selected.add(c.id)); buildCompoundList(); updateSaList(); draw(); }
+  function deselectAll(){ state.selected.clear(); buildCompoundList(); updateSaList(); draw(); }
+
+  function updateSaList(){
+    const sel=document.getElementById('sa-compound');
+    const prev=sel.value;
+    sel.innerHTML='<option value="">-- select compound --</option>';
+    SOLUBILITY_DATA.filter(c=>state.selected.has(c.id)).forEach(c=>{
+      const o=document.createElement('option'); o.value=c.id; o.textContent=`${c.name} (${c.formula})`; sel.appendChild(o);
+    });
+    sel.value=prev;
+    rebuildSaFromPointList();
+  }
+
+  function rebuildSaFromPointList(){
+    const sel=document.getElementById('sa-from-point');
+    sel.innerHTML='<option value="">-- or enter manually below --</option>';
+    state.points.forEach((pt,i)=>{
+      const letter=LABELS[i%LABELS.length];
+      const xR=Math.round(pt.xDisp*10)/10, yR=Math.round(pt.yScaled*10)/10;
+      const o=document.createElement('option'); o.value=i;
+      o.textContent=`${letter}: ${xR}${tempUnit(state.tempScale)}, ${yR}g`;
       sel.appendChild(o);
     });
-    sel.value = prev;
+    sel.onchange=()=>{
+      const v=sel.value;
+      if(v==='') return;
+      const pt=state.points[parseInt(v)];
+      if(!pt) return;
+      document.getElementById('sa-temp').value=pt.xDisp;
+      document.getElementById('sa-sol').value=pt.yScaled;
+      sel.value='';
+    };
   }
 
   // ── DRAW ──
-  function draw() {
-    const { w, h } = getSize();
-    canvas.width = w; canvas.height = h;
-    const d = getDims();
-    const fs = state.fontSize * d.z;
-    ctx.clearRect(0, 0, w, h);
-    if (!state.transparentBg) { ctx.fillStyle = '#ffffff'; ctx.fillRect(0,0,w,h); }
+  function draw(){
+    const {w,h}=getSize();
+    canvas.width=w; canvas.height=h;
+    const d=getDims();
+    const fs=state.fontSize*d.z;
+    ctx.clearRect(0,0,w,h);
+    if(!state.transparentBg){ ctx.fillStyle='#ffffff'; ctx.fillRect(0,0,w,h); }
 
-    // The y-axis is expressed in scaled units: yMin/yMax are per-100g values,
-    // but rendered labels show per-waterAmount values.
-    const yMinScaled = state.yMin * state.waterAmount / 100;
-    const yMaxScaled = state.yMax * state.waterAmount / 100;
-
-    function cxT(tDisp) { return d.pL + (tDisp-state.xMin)/(state.xMax-state.xMin)*d.pW; }
-    function cyS(solScaled) { return d.pT + (1-(solScaled-yMinScaled)/(yMaxScaled-yMinScaled))*d.pH; }
+    const yMinS=state.yMin*state.waterAmount/100;
+    const yMaxS=state.yMax*state.waterAmount/100;
+    function cxT(t){ return d.pL+(t-state.xMin)/(state.xMax-state.xMin)*d.pW; }
+    function cyS(s){ return d.pT+(1-(s-yMinS)/(yMaxS-yMinS))*d.pH; }
 
     // Grid
-    ctx.strokeStyle = '#e0e0e0'; ctx.lineWidth = 0.5;
-    for (let x = state.xMin; x <= state.xMax+0.001; x += state.xTick) {
-      const cx = cxT(x);
-      ctx.beginPath(); ctx.moveTo(cx,d.pT); ctx.lineTo(cx,d.pT+d.pH); ctx.stroke();
-    }
-    // Y ticks are in per-100g units (yMin/yMax), labels show per-waterAmount
-    for (let y = state.yMin; y <= state.yMax+0.001; y += state.yTick) {
-      const cy = cyS(y * state.waterAmount/100);
-      ctx.beginPath(); ctx.moveTo(d.pL,cy); ctx.lineTo(d.pL+d.pW,cy); ctx.stroke();
-    }
+    ctx.strokeStyle='#e0e0e0'; ctx.lineWidth=0.5;
+    for(let x=state.xMin;x<=state.xMax+0.001;x+=state.xTick){ ctx.beginPath(); ctx.moveTo(cxT(x),d.pT); ctx.lineTo(cxT(x),d.pT+d.pH); ctx.stroke(); }
+    for(let y=state.yMin;y<=state.yMax+0.001;y+=state.yTick){ const cy=cyS(y*state.waterAmount/100); ctx.beginPath(); ctx.moveTo(d.pL,cy); ctx.lineTo(d.pL+d.pW,cy); ctx.stroke(); }
 
     // Axis border
-    ctx.strokeStyle = '#333'; ctx.lineWidth = 1.5*d.z;
-    ctx.strokeRect(d.pL, d.pT, d.pW, d.pH);
+    ctx.strokeStyle='#333'; ctx.lineWidth=1.5*d.z;
+    ctx.strokeRect(d.pL,d.pT,d.pW,d.pH);
 
-    // X axis labels
+    // X labels
     ctx.fillStyle='#222'; ctx.textAlign='center'; ctx.textBaseline='top';
-    ctx.font = `${fs}px 'Segoe UI', sans-serif`;
-    for (let x = state.xMin; x <= state.xMax+0.001; x += state.xTick)
-      ctx.fillText(String(Math.round(x*10)/10), cxT(x), d.pT+d.pH+6*d.z);
-    ctx.font = `bold ${fs*1.1}px 'Segoe UI', sans-serif`;
-    ctx.fillText(`Temperature (${tempUnit(state.tempScale)})`, d.pL+d.pW/2, d.pT+d.pH+26*d.z);
+    ctx.font=`${fs}px 'Segoe UI',sans-serif`;
+    for(let x=state.xMin;x<=state.xMax+0.001;x+=state.xTick) ctx.fillText(String(Math.round(x*10)/10),cxT(x),d.pT+d.pH+6*d.z);
+    ctx.font=`bold ${fs*1.1}px 'Segoe UI',sans-serif`;
+    ctx.fillText(`Temperature (${tempUnit(state.tempScale)})`,d.pL+d.pW/2,d.pT+d.pH+26*d.z);
 
-    // Y axis labels (show scaled values: per waterAmount g)
+    // Y labels
     ctx.textAlign='right'; ctx.textBaseline='middle';
-    ctx.font = `${fs}px 'Segoe UI', sans-serif`;
-    for (let y = state.yMin; y <= state.yMax+0.001; y += state.yTick) {
-      const scaledVal = y * state.waterAmount / 100;
-      const cy = cyS(scaledVal);
-      const lbl = scaledVal%1===0 ? Math.round(scaledVal) : scaledVal.toFixed(1);
-      ctx.fillText(String(lbl), d.pL-6*d.z, cy);
+    ctx.font=`${fs}px 'Segoe UI',sans-serif`;
+    for(let y=state.yMin;y<=state.yMax+0.001;y+=state.yTick){
+      const sv=y*state.waterAmount/100;
+      ctx.fillText(String(sv%1===0?Math.round(sv):sv.toFixed(1)),d.pL-6*d.z,cyS(sv));
     }
-    ctx.save();
-    ctx.translate(12*d.z, d.pT+d.pH/2);
-    ctx.rotate(-Math.PI/2);
+    ctx.save(); ctx.translate(12*d.z,d.pT+d.pH/2); ctx.rotate(-Math.PI/2);
     ctx.textAlign='center'; ctx.textBaseline='middle';
-    ctx.font = `bold ${fs*1.1}px 'Segoe UI', sans-serif`;
-    ctx.fillText(`Solubility (g / ${state.waterAmount} g H\u2082O)`, 0, 0);
+    ctx.font=`bold ${fs*1.1}px 'Segoe UI',sans-serif`;
+    ctx.fillText(`Solubility (g / ${state.waterAmount} g H\u2082O)`,0,0);
     ctx.restore();
 
-    // Draw curves and collect label candidates
-    const labelCandidates = [];
-    const monoColor = state.monoColor;
-
-    SOLUBILITY_DATA.forEach(compound => {
-      if (!state.selected.has(compound.id)) return;
-      const color = monoColor ? '#000000' : (state.colors[compound.id] || compound.defaultColor);
-
-      // Canvas-space control points
-      const pts = compound.data.map(([tC, sol]) => {
-        const dispT = toDisplayTemp(tC, state.tempScale);
-        const scaledSol = sol * state.waterAmount / 100;
-        return { x: cxT(dispT), y: cyS(scaledSol) };
-      });
-
-      // Catmull-Rom curve
-      ctx.strokeStyle = color; ctx.lineWidth = 2*d.z; ctx.lineJoin = 'round';
-      ctx.beginPath();
-      let started = false;
-      for (let s = 0; s <= 200; s++) {
-        const t = s/200;
-        const idx = t*(pts.length-1);
-        const i = Math.floor(idx);
-        const lt = idx-i;
-        const i0=Math.max(0,i-1), i1=i, i2=Math.min(pts.length-1,i+1), i3=Math.min(pts.length-1,i+2);
-        const pt = crPoint(pts[i0],pts[i1],pts[i2],pts[i3],lt);
-        if (pt.x < d.pL-1 || pt.x > d.pL+d.pW+1 || pt.y < d.pT-1 || pt.y > d.pT+d.pH+1) { started=false; continue; }
-        if (!started) { ctx.moveTo(pt.x,pt.y); started=true; } else ctx.lineTo(pt.x,pt.y);
+    // Curves + label candidates
+    const labelCandidates=[];
+    SOLUBILITY_DATA.forEach(compound=>{
+      if(!state.selected.has(compound.id)) return;
+      const color=state.monoColor?'#000000':(state.colors[compound.id]||compound.defaultColor);
+      const pts=compound.data.map(([tC,sol])=>({ x:cxT(toDisplayTemp(tC,state.tempScale)), y:cyS(sol*state.waterAmount/100) }));
+      ctx.strokeStyle=color; ctx.lineWidth=2*d.z; ctx.lineJoin='round';
+      ctx.beginPath(); let started=false;
+      for(let s=0;s<=200;s++){
+        const t=s/200, idx=t*(pts.length-1), i=Math.floor(idx), lt=idx-i;
+        const i0=Math.max(0,i-1),i1=i,i2=Math.min(pts.length-1,i+1),i3=Math.min(pts.length-1,i+2);
+        const pt=crPoint(pts[i0],pts[i1],pts[i2],pts[i3],lt);
+        if(pt.x<d.pL-1||pt.x>d.pL+d.pW+1||pt.y<d.pT-1||pt.y>d.pT+d.pH+1){ started=false; continue; }
+        if(!started){ ctx.moveTo(pt.x,pt.y); started=true; } else ctx.lineTo(pt.x,pt.y);
       }
       ctx.stroke();
-
-      // Find best visible label position
-      for (const frac of [0.65, 0.55, 0.75, 0.45, 0.85, 0.35, 0.90, 0.25]) {
-        const tIdx = Math.min(Math.floor(frac*(compound.data.length-1)), compound.data.length-2);
-        const tC = compound.data[tIdx][0];
-        const sol = interpSol(compound, tC) * state.waterAmount / 100;
-        const dispT = toDisplayTemp(tC, state.tempScale);
-        const lx = cxT(dispT), ly = cyS(sol);
-        if (lx >= d.pL+8 && lx <= d.pL+d.pW-35 && ly >= d.pT+10 && ly <= d.pT+d.pH-10) {
-          labelCandidates.push({ lx, ly, text: compound.formula, color });
-          break;
-        }
+      for(const frac of [0.65,0.55,0.75,0.45,0.85,0.35,0.90,0.25]){
+        const tIdx=Math.min(Math.floor(frac*(compound.data.length-1)),compound.data.length-2);
+        const tC=compound.data[tIdx][0], sol=interpSol(compound,tC)*state.waterAmount/100;
+        const lx=cxT(toDisplayTemp(tC,state.tempScale)), ly=cyS(sol);
+        if(lx>=d.pL+8&&lx<=d.pL+d.pW-35&&ly>=d.pT+10&&ly<=d.pT+d.pH-10){ labelCandidates.push({lx,ly,text:compound.formula,color}); break; }
       }
     });
+    drawCurveLabels(labelCandidates,fs,d);
 
-    // Collision-avoidant label placement
-    drawCurveLabels(labelCandidates, fs, d);
-
-    // Draw user points
-    state.points.forEach((pt, i) => {
-      const cx = cxT(pt.xDisp);
-      const cy = cyS(pt.yScaled);
-      if (cx < d.pL || cx > d.pL+d.pW || cy < d.pT || cy > d.pT+d.pH) return;
-
-      if (pt.showDotted) {
-        ctx.setLineDash([4*d.z,3*d.z]);
-        ctx.strokeStyle = pt.lineColor||'#555555';
-        ctx.lineWidth = (pt.lineThick||1)*d.z;
+    // User points
+    state.points.forEach((pt,i)=>{
+      const cx=cxT(pt.xDisp), cy=cyS(pt.yScaled);
+      if(cx<d.pL||cx>d.pL+d.pW||cy<d.pT||cy>d.pT+d.pH) return;
+      if(pt.showDotted){
+        ctx.setLineDash([4*d.z,3*d.z]); ctx.strokeStyle=pt.lineColor||'#555'; ctx.lineWidth=(pt.lineThick||1)*d.z;
         ctx.beginPath(); ctx.moveTo(cx,cy); ctx.lineTo(d.pL,cy); ctx.stroke();
         ctx.beginPath(); ctx.moveTo(cx,cy); ctx.lineTo(cx,d.pT+d.pH); ctx.stroke();
         ctx.setLineDash([]);
       }
-
-      // Dot
       ctx.beginPath(); ctx.arc(cx,cy,5*d.z,0,Math.PI*2);
-      ctx.fillStyle = pt.dotColor||'#e94560'; ctx.fill();
+      ctx.fillStyle=pt.dotColor||'#e94560'; ctx.fill();
       ctx.strokeStyle='#fff'; ctx.lineWidth=1.5*d.z; ctx.stroke();
 
-      // Letter
-      const letter = LABELS[i%LABELS.length];
-      ctx.font = `bold ${fs*1.1}px 'Segoe UI', sans-serif`;
+      const letter=LABELS[i%LABELS.length];
+      ctx.font=`bold ${fs*1.1}px 'Segoe UI',sans-serif`;
       ctx.textBaseline='bottom'; ctx.textAlign='center';
       ctx.strokeStyle='rgba(255,255,255,0.9)'; ctx.lineWidth=3*d.z;
-      ctx.strokeText(letter, cx, cy-7*d.z);
-      ctx.fillStyle='#222'; ctx.fillText(letter, cx, cy-7*d.z);
+      ctx.strokeText(letter,cx,cy-7*d.z); ctx.fillStyle='#222'; ctx.fillText(letter,cx,cy-7*d.z);
 
-      // Coord label
-      if (pt.showCoord) {
-        const coordText = `(${Math.round(pt.xDisp*10)/10}${tempUnit(state.tempScale)}, ${Math.round(pt.yScaled*10)/10}g)`;
-        ctx.font=`${fs*0.88}px 'Segoe UI', sans-serif`;
+      if(pt.showCoord){
+        const ct=`(${Math.round(pt.xDisp*10)/10}${tempUnit(state.tempScale)}, ${Math.round(pt.yScaled*10)/10}g)`;
+        ctx.font=`${fs*0.88}px 'Segoe UI',sans-serif`;
         ctx.textAlign='left'; ctx.textBaseline='top';
         ctx.strokeStyle='rgba(255,255,255,0.9)'; ctx.lineWidth=3*d.z;
-        ctx.strokeText(coordText, cx+7*d.z, cy-4*d.z);
-        ctx.fillStyle='#333'; ctx.fillText(coordText, cx+7*d.z, cy-4*d.z);
+        ctx.strokeText(ct,cx+7*d.z,cy-4*d.z); ctx.fillStyle='#333'; ctx.fillText(ct,cx+7*d.z,cy-4*d.z);
       }
-
-      // On-graph analysis card
-      if (pt.analysisData && pt.showAnalysisOnGraph) {
-        drawAnalysisCard(pt, cx, cy, d, fs, cxT, cyS);
+      if(pt.analysisData&&pt.showAnalysisOnGraph){
+        drawAnalysisCard(pt,cx,cy,d,fs,cxT,cyS);
       }
     });
   }
 
-  // ── COLLISION-AVOIDANT CURVE LABELS ──
-  function drawCurveLabels(candidates, fs, d) {
-    const placed = [];
-    const pad = 3 * d.z;
-    candidates.forEach(({ lx, ly, text, color }) => {
-      ctx.font = `bold ${fs*0.95}px 'Segoe UI', sans-serif`;
-      const tw = ctx.measureText(text).width;
-      const th = fs * 0.95;
-      const offsets = [
-        { ox: 4*d.z, oy: -th-4*d.z },
-        { ox: 4*d.z, oy: 4*d.z },
-        { ox: -tw-8*d.z, oy: -th-4*d.z },
-        { ox: -tw-8*d.z, oy: 4*d.z },
-        { ox: 4*d.z, oy: -th/2 },
-        { ox: -tw-8*d.z, oy: -th/2 },
-        { ox: -tw/2, oy: -th-8*d.z },
-        { ox: -tw/2, oy: 6*d.z },
+  function drawCurveLabels(candidates,fs,d){
+    const placed=[]; const pad=3*d.z;
+    candidates.forEach(({lx,ly,text,color})=>{
+      ctx.font=`bold ${fs*0.95}px 'Segoe UI',sans-serif`;
+      const tw=ctx.measureText(text).width, th=fs*0.95;
+      const offsets=[
+        {ox:4*d.z,oy:-th-4*d.z},{ox:4*d.z,oy:4*d.z},{ox:-tw-8*d.z,oy:-th-4*d.z},{ox:-tw-8*d.z,oy:4*d.z},
+        {ox:4*d.z,oy:-th/2},{ox:-tw-8*d.z,oy:-th/2},{ox:-tw/2,oy:-th-8*d.z},{ox:-tw/2,oy:6*d.z}
       ];
-      let best = null;
-      for (const off of offsets) {
-        const rx=lx+off.ox-pad, ry=ly+off.oy-pad, rw=tw+pad*2, rh=th+pad*2;
-        if (rx<d.pL || rx+rw>d.pL+d.pW || ry<d.pT || ry+rh>d.pT+d.pH) continue;
-        if (!placed.some(p => rx<p.x+p.w && rx+rw>p.x && ry<p.y+p.h && ry+rh>p.y)) {
-          best = { tx:lx+off.ox, ty:ly+off.oy, rx, ry, rw, rh }; break;
-        }
+      let best=null;
+      for(const off of offsets){
+        const rx=lx+off.ox-pad,ry=ly+off.oy-pad,rw=tw+pad*2,rh=th+pad*2;
+        if(rx<d.pL||rx+rw>d.pL+d.pW||ry<d.pT||ry+rh>d.pT+d.pH) continue;
+        if(!placed.some(p=>rx<p.x+p.w&&rx+rw>p.x&&ry<p.y+p.h&&ry+rh>p.y)){ best={tx:lx+off.ox,ty:ly+off.oy,rx,ry,rw,rh}; break; }
       }
-      if (!best) {
-        const off=offsets[0];
-        best = { tx:lx+off.ox, ty:ly+off.oy, rx:lx+off.ox-pad, ry:ly+off.oy-pad, rw:tw+pad*2, rh:th+pad*2 };
-      }
-      placed.push({ x:best.rx, y:best.ry, w:best.rw, h:best.rh });
-      ctx.font = `bold ${fs*0.95}px 'Segoe UI', sans-serif`;
+      if(!best){ const off=offsets[0]; best={tx:lx+off.ox,ty:ly+off.oy,rx:lx+off.ox-pad,ry:ly+off.oy-pad,rw:tw+pad*2,rh:th+pad*2}; }
+      placed.push({x:best.rx,y:best.ry,w:best.rw,h:best.rh});
+      ctx.font=`bold ${fs*0.95}px 'Segoe UI',sans-serif`;
       ctx.textAlign='left'; ctx.textBaseline='top';
       ctx.strokeStyle='rgba(255,255,255,0.9)'; ctx.lineWidth=3.5*d.z;
-      ctx.strokeText(text, best.tx, best.ty);
-      ctx.fillStyle=color; ctx.fillText(text, best.tx, best.ty);
+      ctx.strokeText(text,best.tx,best.ty); ctx.fillStyle=color; ctx.fillText(text,best.tx,best.ty);
     });
   }
 
-  // ── ON-GRAPH ANALYSIS CARD ──
-  function drawAnalysisCard(pt, cx, cy, d, fs, cxT, cyS) {
-    const ad = pt.analysisData;
-    const lines = [ad.type, `Limit: ${ad.satLimit}g`, ad.detail1, ad.detail2].filter(Boolean);
-    const pad = 8*d.z;
-    const lh = fs*0.9 + 3*d.z;
-    ctx.font = `${fs*0.85}px 'Segoe UI', sans-serif`;
-    const maxW = Math.max(...lines.map(l => ctx.measureText(l).width));
-    const bw = maxW + pad*2, bh = lh*lines.length + pad*2;
-    let bx = cx+14*d.z, by = cy-bh/2;
-    if (bx+bw > d.pL+d.pW-4) bx = cx-bw-14*d.z;
-    if (by < d.pT+4) by = d.pT+4;
-    if (by+bh > d.pT+d.pH-4) by = d.pT+d.pH-bh-4;
-    const typeColor = ad.type==='Unsaturated' ? '#4caf50' : ad.type==='Saturated' ? '#ffc107' : '#ef5350';
+  // ── ON-GRAPH ANALYSIS CARD (draggable via offset) ──
+  function drawAnalysisCard(pt,cx,cy,d,fs){
+    const ad=pt.analysisData;
+    const lines=[ad.type,`Limit: ${ad.satLimit}g`,ad.detail1,ad.detail2].filter(Boolean);
+    const pad=8*d.z, lh=fs*0.9+3*d.z;
+    ctx.font=`${fs*0.85}px 'Segoe UI',sans-serif`;
+    const maxW=Math.max(...lines.map(l=>ctx.measureText(l).width));
+    const bw=maxW+pad*2, bh=lh*lines.length+pad*2;
+    // Base position + any user drag offset
+    let bx=cx+14*d.z+(pt.cardOffsetX||0);
+    let by=cy-bh/2+(pt.cardOffsetY||0);
+    // Clamp to plot area
+    bx=Math.max(d.pL,Math.min(d.pL+d.pW-bw,bx));
+    by=Math.max(d.pT,Math.min(d.pT+d.pH-bh,by));
+    // Store rendered bbox for hit-testing during drag
+    pt._cardBox={bx,by,bw,bh};
+    const typeColor=ad.type==='Unsaturated'?'#4caf50':ad.type==='Saturated'?'#ffc107':'#ef5350';
     ctx.fillStyle='rgba(15,52,96,0.93)';
     ctx.beginPath(); ctx.roundRect(bx,by,bw,bh,5*d.z); ctx.fill();
     ctx.strokeStyle=typeColor; ctx.lineWidth=1.5*d.z; ctx.stroke();
-    let ty = by+pad;
-    lines.forEach((line,i) => {
-      ctx.font = i===0 ? `bold ${fs*0.9}px 'Segoe UI', sans-serif` : `${fs*0.82}px 'Segoe UI', sans-serif`;
-      ctx.fillStyle = i===0 ? typeColor : '#e0e0e0';
+    // Drag handle hint (subtle top bar)
+    ctx.fillStyle='rgba(255,255,255,0.07)';
+    ctx.beginPath(); ctx.roundRect(bx,by,bw,14*d.z,[5*d.z,5*d.z,0,0]); ctx.fill();
+    let ty=by+pad;
+    lines.forEach((line,i)=>{
+      ctx.font=i===0?`bold ${fs*0.9}px 'Segoe UI',sans-serif`:`${fs*0.82}px 'Segoe UI',sans-serif`;
+      ctx.fillStyle=i===0?typeColor:'#e0e0e0';
       ctx.textAlign='left'; ctx.textBaseline='top';
-      ctx.fillText(line, bx+pad, ty); ty+=lh;
+      ctx.fillText(line,bx+pad,ty); ty+=lh;
     });
     ctx.strokeStyle='rgba(200,200,200,0.35)'; ctx.lineWidth=0.8*d.z;
     ctx.setLineDash([3*d.z,2*d.z]);
-    ctx.beginPath(); ctx.moveTo(cx,cy); ctx.lineTo(bx+(bx>cx?0:bw), by+bh/2); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(cx,cy); ctx.lineTo(bx+(bx>cx?0:bw),by+bh/2); ctx.stroke();
     ctx.setLineDash([]);
   }
 
+  // ── DRAG HANDLERS FOR ANALYSIS CARDS ──
+  function getCanvasPos(e){
+    const r=canvas.getBoundingClientRect();
+    return { cx:(e.clientX-r.left)*canvas.width/r.width, cy:(e.clientY-r.top)*canvas.height/r.height };
+  }
+  function hitTestCards(cx,cy){
+    for(let i=state.points.length-1;i>=0;i--){
+      const pt=state.points[i];
+      if(pt.analysisData&&pt.showAnalysisOnGraph&&pt._cardBox){
+        const b=pt._cardBox;
+        if(cx>=b.bx&&cx<=b.bx+b.bw&&cy>=b.by&&cy<=b.by+b.bh) return i;
+      }
+    }
+    return -1;
+  }
+
+  function onMouseDown(e){
+    const {cx,cy}=getCanvasPos(e);
+    const idx=hitTestCards(cx,cy);
+    if(idx>=0){
+      drag={ptIdx:idx, startMX:e.clientX, startMY:e.clientY,
+             startOX:state.points[idx].cardOffsetX||0, startOY:state.points[idx].cardOffsetY||0};
+      canvas.style.cursor='grabbing';
+      e.preventDefault();
+    }
+  }
+  function onMouseMove(e){
+    if(!drag) return;
+    const r=canvas.getBoundingClientRect();
+    const scaleX=canvas.width/r.width, scaleY=canvas.height/r.height;
+    const dx=(e.clientX-drag.startMX)*scaleX, dy=(e.clientY-drag.startMY)*scaleY;
+    state.points[drag.ptIdx].cardOffsetX=drag.startOX+dx;
+    state.points[drag.ptIdx].cardOffsetY=drag.startOY+dy;
+    draw();
+  }
+  function onMouseUp(){
+    if(drag){ drag=null; canvas.style.cursor='crosshair'; }
+  }
+  function onMouseMoveHover(e){
+    if(drag) return;
+    const {cx,cy}=getCanvasPos(e);
+    canvas.style.cursor=hitTestCards(cx,cy)>=0?'grab':'crosshair';
+  }
+
   // ── POINT MANAGEMENT ──
-  function rebuildPointsList() {
-    const list = document.getElementById('points-list');
-    list.innerHTML = '';
-    state.points.forEach((pt, i) => {
-      const letter = LABELS[i%LABELS.length];
-      const xR = Math.round(pt.xDisp*10)/10, yR = Math.round(pt.yScaled*10)/10;
-      const card = document.createElement('div');
-      card.className = 'point-card';
-      card.innerHTML = `
+  function rebuildPointsList(){
+    const list=document.getElementById('points-list');
+    list.innerHTML='';
+    state.points.forEach((pt,i)=>{
+      const letter=LABELS[i%LABELS.length];
+      const xR=Math.round(pt.xDisp*10)/10, yR=Math.round(pt.yScaled*10)/10;
+      const card=document.createElement('div'); card.className='point-card';
+      card.innerHTML=`
         <div class="point-card-header">
           <div class="point-label-badge">${letter}</div>
           <div class="point-coords">${xR}${tempUnit(state.tempScale)}, ${yR}g</div>
@@ -764,172 +988,208 @@ const SC = (() => {
         <div class="point-toggles">
           <label class="point-toggle"><input type="checkbox" class="pt-dotted" ${pt.showDotted?'checked':''} /> Show projection lines</label>
           <label class="point-toggle"><input type="checkbox" class="pt-coord" ${pt.showCoord?'checked':''} /> Show ordered pair label</label>
-          ${pt.analysisData ? `<label class="point-toggle"><input type="checkbox" class="pt-analysis" ${pt.showAnalysisOnGraph?'checked':''} /> Show analysis card on graph</label>` : ''}
+          ${pt.analysisData?`<label class="point-toggle"><input type="checkbox" class="pt-analysis" ${pt.showAnalysisOnGraph?'checked':''} /> Show analysis card on graph</label>`:''}
         </div>
         <div class="point-color-row">
           <label>Dot</label>
-          <input type="color" class="pt-dot-color point-color-swatch" value="${pt.dotColor||'#e94560'}" />
+          <button class="color-swatch-btn pt-dot-sw" style="background:${pt.dotColor||'#e94560'};width:22px;height:22px;"></button>
           <label style="margin-left:5px;">Line</label>
-          <input type="color" class="pt-line-color point-color-swatch" value="${pt.lineColor||'#555555'}" />
+          <button class="color-swatch-btn pt-line-sw" style="background:${pt.lineColor||'#555555'};width:22px;height:22px;"></button>
         </div>
         <div class="point-thick-row">
-          <label>Line thickness</label>
+          <label>Thickness</label>
           <input type="range" class="pt-thick-r" min="0.5" max="4" step="0.5" value="${pt.lineThick||1}" />
-          <input type="number" class="pt-thick-n" min="0.5" max="4" step="0.5" value="${pt.lineThick||1}" style="width:50px;" />
+          <input type="number" class="pt-thick-n" min="0.5" max="4" step="0.5" value="${pt.lineThick||1}" />
         </div>
+        ${pt.analysisData?`<button class="action-btn" style="margin-top:5px;font-size:10px;padding:5px;" data-clear-card="${i}">✕ Remove analysis card</button>`:''}
       `;
-      card.querySelector('.point-delete').onclick = () => { state.points.splice(i,1); rebuildPointsList(); draw(); };
-      card.querySelector('.pt-dotted').onchange = e => { pt.showDotted = e.target.checked; draw(); };
-      card.querySelector('.pt-coord').onchange = e => { pt.showCoord = e.target.checked; draw(); };
-      const ac = card.querySelector('.pt-analysis');
-      if (ac) ac.onchange = e => { pt.showAnalysisOnGraph = e.target.checked; draw(); };
-      card.querySelector('.pt-dot-color').oninput = e => { pt.dotColor = e.target.value; draw(); };
-      card.querySelector('.pt-line-color').oninput = e => { pt.lineColor = e.target.value; draw(); };
-      const tr = card.querySelector('.pt-thick-r'), tn = card.querySelector('.pt-thick-n');
-      tr.oninput = () => { tn.value=tr.value; pt.lineThick=parseFloat(tr.value); draw(); };
-      tn.onchange = () => { tr.value=tn.value; pt.lineThick=parseFloat(tn.value); draw(); };
+      card.querySelector('.point-delete').onclick=()=>{ state.points.splice(i,1); rebuildPointsList(); rebuildSaFromPointList(); draw(); };
+      card.querySelector('.pt-dotted').onchange=e=>{ pt.showDotted=e.target.checked; draw(); };
+      card.querySelector('.pt-coord').onchange=e=>{ pt.showCoord=e.target.checked; draw(); };
+      const ac=card.querySelector('.pt-analysis');
+      if(ac) ac.onchange=e=>{ pt.showAnalysisOnGraph=e.target.checked; draw(); };
+
+      // Dot color picker
+      const dotSw=card.querySelector('.pt-dot-sw');
+      dotSw.addEventListener('click',e=>{
+        e.stopPropagation();
+        openColorPicker(dotSw,pt.dotColor||'#e94560',col=>{ pt.dotColor=col; draw(); });
+      });
+      // Line color picker
+      const lineSw=card.querySelector('.pt-line-sw');
+      lineSw.addEventListener('click',e=>{
+        e.stopPropagation();
+        openColorPicker(lineSw,pt.lineColor||'#555555',col=>{ pt.lineColor=col; draw(); });
+      });
+
+      const tr=card.querySelector('.pt-thick-r'),tn=card.querySelector('.pt-thick-n');
+      tr.oninput=()=>{ tn.value=tr.value; pt.lineThick=parseFloat(tr.value); draw(); };
+      tn.onchange=()=>{ tr.value=tn.value; pt.lineThick=parseFloat(tn.value); draw(); };
+
+      // Remove analysis card only
+      const clearBtn=card.querySelector('[data-clear-card]');
+      if(clearBtn) clearBtn.onclick=()=>{ pt.analysisData=null; pt.showAnalysisOnGraph=false; rebuildPointsList(); draw(); };
+
       list.appendChild(card);
     });
+    rebuildSaFromPointList();
   }
 
-  function defaultProps() {
+  function defaultProps(){
     return {
-      showCoord: document.getElementById('show-coord-label').checked,
-      showDotted: document.getElementById('show-dotted-lines').checked,
-      dotColor: document.getElementById('default-dot-color').value,
-      lineColor: document.getElementById('default-line-color').value,
-      lineThick: parseFloat(document.getElementById('default-line-thick-num').value)||1,
+      showCoord:document.getElementById('show-coord-label').checked,
+      showDotted:document.getElementById('show-dotted-lines').checked,
+      dotColor:document.getElementById('default-dot-color').value,
+      lineColor:document.getElementById('default-line-color').value,
+      lineThick:parseFloat(document.getElementById('default-line-thick-num').value)||1,
     };
   }
 
-  function addPointManual() {
-    const x = parseFloat(document.getElementById('pt-x').value);
-    const y = parseFloat(document.getElementById('pt-y').value);
-    if (isNaN(x)||isNaN(y)) { showAlert('Enter valid temperature and solubility values.'); return; }
-    state.points.push({ xDisp:x, yScaled:y, ...defaultProps() });
+  function addPointManual(){
+    const x=parseFloat(document.getElementById('pt-x').value);
+    const y=parseFloat(document.getElementById('pt-y').value);
+    if(isNaN(x)||isNaN(y)){ showAlert('Enter valid temperature and solubility values.'); return; }
+    state.points.push({xDisp:x,yScaled:y,...defaultProps()});
     rebuildPointsList(); draw();
   }
 
-  function onCanvasClick(e) {
-    const rect = canvas.getBoundingClientRect();
-    const sx = canvas.width/rect.width, sy = canvas.height/rect.height;
-    const cx=(e.clientX-rect.left)*sx, cy=(e.clientY-rect.top)*sy;
-    const d = getDims();
-    if (cx<d.pL||cx>d.pL+d.pW||cy<d.pT||cy>d.pT+d.pH) return;
-    const yMinScaled = state.yMin*state.waterAmount/100;
-    const yMaxScaled = state.yMax*state.waterAmount/100;
-    const xD = state.xMin + (cx-d.pL)/d.pW*(state.xMax-state.xMin);
-    const yS = yMinScaled + (1-(cy-d.pT)/d.pH)*(yMaxScaled-yMinScaled);
-    state.points.push({ xDisp:Math.round(xD*10)/10, yScaled:Math.round(yS*10)/10, ...defaultProps() });
+  function onCanvasClick(e){
+    if(drag) return; // was a drag, not a click
+    const r=canvas.getBoundingClientRect();
+    const sx=canvas.width/r.width, sy=canvas.height/r.height;
+    const cx=(e.clientX-r.left)*sx, cy=(e.clientY-r.top)*sy;
+    const d=getDims();
+    if(cx<d.pL||cx>d.pL+d.pW||cy<d.pT||cy>d.pT+d.pH) return;
+    // Don't add a point if clicking on a card
+    if(hitTestCards(cx,cy)>=0) return;
+    const yMinS=state.yMin*state.waterAmount/100, yMaxS=state.yMax*state.waterAmount/100;
+    const xD=state.xMin+(cx-d.pL)/d.pW*(state.xMax-state.xMin);
+    const yS=yMinS+(1-(cy-d.pT)/d.pH)*(yMaxS-yMinS);
+    state.points.push({xDisp:Math.round(xD*10)/10,yScaled:Math.round(yS*10)/10,...defaultProps()});
     rebuildPointsList(); draw();
   }
 
   // ── SATURATION ANALYSIS ──
-  function analyzeSaturation() {
-    const tempDisp = parseFloat(document.getElementById('sa-temp').value);
-    const solAmt   = parseFloat(document.getElementById('sa-sol').value);
-    const cid      = document.getElementById('sa-compound').value;
-    const resultDiv= document.getElementById('analysis-result');
-    if (isNaN(tempDisp)||isNaN(solAmt)||!cid) {
-      resultDiv.innerHTML = '<div class="analysis-card" style="color:var(--red)">Fill in all three fields.</div>';
+  function analyzeSaturation(){
+    const tempDisp=parseFloat(document.getElementById('sa-temp').value);
+    const solAmt=parseFloat(document.getElementById('sa-sol').value);
+    const cid=document.getElementById('sa-compound').value;
+    const resultDiv=document.getElementById('analysis-result');
+    if(isNaN(tempDisp)||isNaN(solAmt)||!cid){
+      resultDiv.innerHTML='<div class="analysis-card" style="color:var(--red)">Fill in all three fields.</div>';
       return;
     }
-    const compound = SOLUBILITY_DATA.find(c => c.id===cid);
-    if (!compound) return;
+    const compound=SOLUBILITY_DATA.find(c=>c.id===cid);
+    if(!compound) return;
 
-    const tempC = fromDisplayTemp(tempDisp, state.tempScale);
-    // Database: per 100g water. User input: per waterAmount g water.
-    const solPer100 = solAmt * 100 / state.waterAmount;      // convert to per-100g basis
-    const satPer100 = interpSol(compound, tempC);             // sat limit per 100g
-    const satScaled = satPer100 * state.waterAmount / 100;    // sat limit per waterAmount g
+    const tempC=fromDisplayTemp(tempDisp,state.tempScale);
+    const solPer100=solAmt*100/state.waterAmount;
+    const satPer100=interpSol(compound,tempC);
+    const satScaled=satPer100*state.waterAmount/100;
 
-    let type, detail1='', detail2='';
-    const diff = solAmt - satScaled;
-
-    if (Math.abs(diff) <= 0.5) {
-      type = 'Saturated';
-      detail1 = `Exactly at the saturation point at ${tempDisp}${tempUnit(state.tempScale)}.`;
-    } else if (diff < 0) {
-      type = 'Unsaturated';
-      detail1 = `${Math.abs(diff).toFixed(1)}g below saturation limit.`;
-      // Find temp where sol = solPer100 (per 100g). For most compounds, cool to saturate.
-      const tSatC = findTempForTarget(compound, solPer100, tempC);
-      if (tSatC !== null) {
-        const tSatDisp = toDisplayTemp(tSatC, state.tempScale);
-        detail2 = `Cool ~${Math.abs(tempDisp-tSatDisp).toFixed(1)}${tempUnit(state.tempScale)} to reach saturation (${Math.round(tSatDisp*10)/10}${tempUnit(state.tempScale)}).`;
+    let type,detail1='',detail2='';
+    const diff=solAmt-satScaled;
+    if(Math.abs(diff)<=0.5){
+      type='Saturated'; detail1=`Exactly at the saturation point at ${tempDisp}${tempUnit(state.tempScale)}.`;
+    } else if(diff<0){
+      type='Unsaturated'; detail1=`${Math.abs(diff).toFixed(1)}g below saturation limit.`;
+      const tSatC=findTempForTarget(compound,solPer100,tempC);
+      if(tSatC!==null){
+        const tSatDisp=toDisplayTemp(tSatC,state.tempScale);
+        detail2=`Cool ~${Math.abs(tempDisp-tSatDisp).toFixed(1)}${tempUnit(state.tempScale)} to reach saturation (${Math.round(tSatDisp*10)/10}${tempUnit(state.tempScale)}).`;
       }
     } else {
-      type = 'Supersaturated';
-      detail1 = `${diff.toFixed(1)}g above saturation limit.`;
-      detail2 = 'No temperature change required.';
+      type='Supersaturated'; detail1=`${diff.toFixed(1)}g above saturation limit.`; detail2='No temperature change required.';
     }
 
-    const typeClass = type==='Unsaturated' ? 'sat-unsaturated' : type==='Saturated' ? 'sat-saturated' : 'sat-supersaturated';
-    resultDiv.innerHTML = `
+    const typeClass=type==='Unsaturated'?'sat-unsaturated':type==='Saturated'?'sat-saturated':'sat-supersaturated';
+    resultDiv.innerHTML=`
       <div class="analysis-card">
         <div class="sat-type ${typeClass}">${type}</div>
         <div class="sat-row"><span>Sat. limit at ${tempDisp}${tempUnit(state.tempScale)}:</span><b>${satScaled.toFixed(1)}g / ${state.waterAmount}g H₂O</b></div>
         <div class="sat-row"><span>Amount dissolved:</span><b>${solAmt}g</b></div>
-        ${detail1 ? `<div style="margin-top:5px;color:var(--text-dim)">${detail1}</div>` : ''}
-        ${detail2 ? `<div style="color:var(--text-dim)">${detail2}</div>` : ''}
+        ${detail1?`<div style="margin-top:5px;color:var(--text-dim)">${detail1}</div>`:''}
+        ${detail2?`<div style="color:var(--text-dim)">${detail2}</div>`:''}
       </div>`;
 
-    if (document.getElementById('sa-plot-point').checked) {
-      const showCard = document.getElementById('sa-show-on-graph').checked;
-      const ad = { type, satLimit: satScaled.toFixed(1), detail1, detail2 };
-      state.points.push({
-        xDisp: tempDisp, yScaled: Math.round(solAmt*10)/10,
-        ...defaultProps(), showAnalysisOnGraph: showCard, analysisData: ad
-      });
-      rebuildPointsList(); draw();
+    if(document.getElementById('sa-plot-point').checked){
+      const showCard=document.getElementById('sa-show-on-graph').checked;
+      const ad={type,satLimit:satScaled.toFixed(1),detail1,detail2};
+      const newPt={xDisp:tempDisp,yScaled:Math.round(solAmt*10)/10,...defaultProps(),showAnalysisOnGraph:showCard,analysisData:ad};
+
+      // Check if any existing analysis cards exist on the graph
+      const existingWithCards=state.points.filter(p=>p.analysisData&&p.showAnalysisOnGraph);
+      if(existingWithCards.length>0){
+        showAnalysisChoiceDialog(()=>{
+          // Keep existing, just add new
+          state.points.push(newPt);
+          rebuildPointsList(); draw();
+        },()=>{
+          // Clear all existing analysis cards, then add new
+          state.points.forEach(p=>{ p.analysisData=null; p.showAnalysisOnGraph=false; });
+          state.points.push(newPt);
+          rebuildPointsList(); draw();
+        });
+      } else {
+        state.points.push(newPt);
+        rebuildPointsList(); draw();
+      }
     }
   }
 
-  function findTempForTarget(compound, targetPer100, startTempC) {
-    // Walk downward from startTempC (cool) — works for increasing solubility curves
-    for (let t = startTempC; t >= compound.data[0][0]; t -= 0.5) {
-      if (interpSol(compound,t) <= targetPer100) return t;
-    }
-    // Walk upward — works for decreasing curves (e.g. Ce2(SO4)3)
-    for (let t = startTempC; t <= compound.data[compound.data.length-1][0]; t += 0.5) {
-      if (interpSol(compound,t) <= targetPer100) return t;
-    }
+  // ── "KEEP/REPLACE" DIALOG ──
+  function showAnalysisChoiceDialog(onKeep, onReplace){
+    const overlay=document.createElement('div'); overlay.className='confirm-overlay';
+    const dlg=document.createElement('div'); dlg.className='confirm-dialog';
+    dlg.innerHTML=`
+      <h3>Existing Analysis Cards</h3>
+      <p>There are analysis cards already on the graph. What would you like to do?</p>
+      <div class="confirm-dialog-btns">
+        <button class="confirm-btn-keep">Keep All</button>
+        <button class="confirm-btn-replace">Replace Old</button>
+        <button class="confirm-btn-cancel">Cancel</button>
+      </div>`;
+    document.body.appendChild(overlay);
+    document.body.appendChild(dlg);
+    const cleanup=()=>{ overlay.remove(); dlg.remove(); };
+    dlg.querySelector('.confirm-btn-keep').onclick=()=>{ cleanup(); onKeep(); };
+    dlg.querySelector('.confirm-btn-replace').onclick=()=>{ cleanup(); onReplace(); };
+    dlg.querySelector('.confirm-btn-cancel').onclick=cleanup;
+    overlay.onclick=cleanup;
+  }
+
+  function findTempForTarget(compound,targetPer100,startTempC){
+    for(let t=startTempC;t>=compound.data[0][0];t-=0.5){ if(interpSol(compound,t)<=targetPer100) return t; }
+    for(let t=startTempC;t<=compound.data[compound.data.length-1][0];t+=0.5){ if(interpSol(compound,t)<=targetPer100) return t; }
     return null;
   }
 
   // ── INTERSECTIONS ──
-  function findIntersections() {
-    const list = document.getElementById('intersect-list');
-    list.innerHTML = '';
-    const active = SOLUBILITY_DATA.filter(c => state.selected.has(c.id));
-    const found = [];
-    for (let i=0; i<active.length; i++) {
-      for (let j=i+1; j<active.length; j++) {
-        const c1=active[i], c2=active[j];
-        let prev=null;
-        for (let t=0; t<=100; t+=0.5) {
-          const diff = interpSol(c1,t)-interpSol(c2,t);
-          if (prev!==null && Math.sign(diff)!==Math.sign(prev)) {
-            const tX = t-0.5 + 0.5*Math.abs(prev)/(Math.abs(prev)+Math.abs(diff));
-            const sX = interpSol(c1,tX);
-            const dispT = toDisplayTemp(tX, state.tempScale);
-            const scaledS = sX * state.waterAmount/100;
-            found.push({ tC:tX, dispT, s:scaledS, c1:c1.formula, c2:c2.formula });
+  function findIntersections(){
+    const list=document.getElementById('intersect-list');
+    list.innerHTML='';
+    const active=SOLUBILITY_DATA.filter(c=>state.selected.has(c.id));
+    const found=[];
+    for(let i=0;i<active.length;i++){
+      for(let j=i+1;j<active.length;j++){
+        const c1=active[i],c2=active[j]; let prev=null;
+        for(let t=0;t<=100;t+=0.5){
+          const diff=interpSol(c1,t)-interpSol(c2,t);
+          if(prev!==null&&Math.sign(diff)!==Math.sign(prev)){
+            const tX=t-0.5+0.5*Math.abs(prev)/(Math.abs(prev)+Math.abs(diff));
+            const sX=interpSol(c1,tX);
+            found.push({tC:tX,dispT:toDisplayTemp(tX,state.tempScale),s:sX*state.waterAmount/100,c1:c1.formula,c2:c2.formula});
           }
-          prev = diff;
+          prev=diff;
         }
       }
     }
-    if (found.length===0) {
-      list.innerHTML='<div style="font-size:11px;color:var(--text-dim);padding:4px 0;">No intersections found among selected compounds.</div>';
-      return;
-    }
-    found.forEach(f => {
-      const item = document.createElement('div');
-      item.className = 'intersect-item';
-      item.innerHTML = `<b>${f.c1} ∩ ${f.c2}</b><br>${Math.round(f.dispT*10)/10}${tempUnit(state.tempScale)}, ${Math.round(f.s*10)/10}g <span style="color:var(--accent);font-size:10px;">↑ click to plot</span>`;
-      item.onclick = () => {
-        state.points.push({ xDisp:Math.round(f.dispT*10)/10, yScaled:Math.round(f.s*10)/10, ...defaultProps() });
+    if(found.length===0){ list.innerHTML='<div style="font-size:11px;color:var(--text-dim);padding:4px 0;">No intersections found among selected compounds.</div>'; return; }
+    found.forEach(f=>{
+      const item=document.createElement('div'); item.className='intersect-item';
+      item.innerHTML=`<b>${f.c1} ∩ ${f.c2}</b><br>${Math.round(f.dispT*10)/10}${tempUnit(state.tempScale)}, ${Math.round(f.s*10)/10}g <span style="color:var(--accent);font-size:10px;">↑ click to plot</span>`;
+      item.onclick=()=>{
+        state.points.push({xDisp:Math.round(f.dispT*10)/10,yScaled:Math.round(f.s*10)/10,...defaultProps()});
         rebuildPointsList(); draw();
         showAlert(`Plotted: ${Math.round(f.dispT*10)/10}${tempUnit(state.tempScale)}, ${Math.round(f.s*10)/10}g`);
       };
@@ -938,53 +1198,61 @@ const SC = (() => {
   }
 
   // ── CUSTOM COMPOUND MODAL ──
-  function openAddCompoundModal() {
+  function openAddCompoundModal(){
     document.getElementById('modal-name').value='';
     document.getElementById('modal-formula').value='';
+    document.getElementById('modal-name-error').textContent='';
     document.getElementById('modal-color').value='#'+Math.floor(Math.random()*0xffffff).toString(16).padStart(6,'0');
-    const grid=document.getElementById('modal-data-grid');
-    grid.innerHTML='';
-    [0,20,40,60,80,100].forEach(t => addModalDataRow(t,''));
+    const grid=document.getElementById('modal-data-grid'); grid.innerHTML='';
+    [0,20,40,60,80,100].forEach(t=>addModalDataRow(t,''));
     document.getElementById('add-compound-modal').style.display='flex';
   }
-  function closeAddCompoundModal() {
-    document.getElementById('add-compound-modal').style.display='none';
+  function closeAddCompoundModal(){ document.getElementById('add-compound-modal').style.display='none'; }
+  function addModalDataRow(tVal,sVal){
+    const grid=document.getElementById('modal-data-grid');
+    const row=document.createElement('div'); row.className='modal-data-row';
+    const ti=document.createElement('input'); ti.type='number'; ti.placeholder='°C'; if(tVal!==undefined) ti.value=tVal;
+    const si=document.createElement('input'); si.type='number'; si.placeholder='g/100g'; if(sVal!==undefined&&sVal!=='') si.value=sVal;
+    row.appendChild(ti); row.appendChild(si); grid.appendChild(row);
   }
-  function addModalDataRow(tVal, sVal) {
-    const grid = document.getElementById('modal-data-grid');
-    const row = document.createElement('div'); row.className='modal-data-row';
-    const ti=document.createElement('input'); ti.type='number'; ti.placeholder='°C';
-    if (tVal!==undefined) ti.value=tVal;
-    const si=document.createElement('input'); si.type='number'; si.placeholder='g/100g';
-    if (sVal!==undefined&&sVal!=='') si.value=sVal;
-    row.appendChild(ti); row.appendChild(si);
-    grid.appendChild(row);
+  function validateIUPACName(){
+    const name=document.getElementById('modal-name').value;
+    const errEl=document.getElementById('modal-name-error');
+    const result=window.validateIUPACName(name);
+    errEl.textContent=result.msg;
   }
-  function confirmAddCompound() {
-    const name = document.getElementById('modal-name').value.trim();
-    const formula = document.getElementById('modal-formula').value.trim();
-    const color = document.getElementById('modal-color').value;
-    if (!name||!formula) { showAlert('Name and formula are required.'); return; }
-    const rows = document.getElementById('modal-data-grid').querySelectorAll('.modal-data-row');
+  function confirmAddCompound(){
+    const name=document.getElementById('modal-name').value.trim();
+    const rawFormula=document.getElementById('modal-formula').value.trim();
+    const color=document.getElementById('modal-color').value;
+    if(!name||!rawFormula){ showAlert('Name and formula are required.'); return; }
+
+    // IUPAC check
+    const iupac=window.validateIUPACName(name);
+    if(!iupac.ok){ showAlert('Please use an IUPAC-compliant compound name.'); return; }
+
+    // Auto-convert plain digits in formula to Unicode subscripts
+    const formula=toSubscripts(rawFormula);
+
+    const rows=document.getElementById('modal-data-grid').querySelectorAll('.modal-data-row');
     const data=[];
-    rows.forEach(row => {
+    rows.forEach(row=>{
       const ins=row.querySelectorAll('input');
-      const t=parseFloat(ins[0].value), s=parseFloat(ins[1].value);
-      if (!isNaN(t)&&!isNaN(s)) data.push([t,s]);
+      const t=parseFloat(ins[0].value),s=parseFloat(ins[1].value);
+      if(!isNaN(t)&&!isNaN(s)) data.push([t,s]);
     });
-    if (data.length<2) { showAlert('Add at least 2 valid data points.'); return; }
+    if(data.length<2){ showAlert('Add at least 2 valid data points.'); return; }
     data.sort((a,b)=>a[0]-b[0]);
     const id='custom_'+Date.now();
     const nc={id,name,formula,defaultColor:color,data};
-    const customs=[...loadCustomCompounds(),nc];
-    saveCustomCompounds(customs);
+    saveCustomCompounds([...loadCustomCompounds(),nc]);
     SOLUBILITY_DATA.push(nc);
     state.colors[id]=color;
     state.selected.add(id);
     buildCompoundList(); updateSaList(); closeAddCompoundModal(); draw();
     showAlert(`${name} added successfully.`);
   }
-  function removeCustom(id) {
+  function removeCustom(id){
     SOLUBILITY_DATA=SOLUBILITY_DATA.filter(c=>c.id!==id);
     state.selected.delete(id);
     saveCustomCompounds(loadCustomCompounds().filter(c=>c.id!==id));
@@ -993,43 +1261,39 @@ const SC = (() => {
   }
 
   // ── EXPORT ──
-  function exportPNG() {
-    const link=document.createElement('a');
-    link.download='solubility-curve.png';
-    link.href=canvas.toDataURL('image/png');
-    link.click();
-  }
+  function exportPNG(){ const l=document.createElement('a'); l.download='solubility-curve.png'; l.href=canvas.toDataURL('image/png'); l.click(); }
 
   // ── ALERT ──
-  function showAlert(msg) {
+  function showAlert(msg){
     document.querySelectorAll('.styled-alert').forEach(e=>e.remove());
     const el=document.createElement('div'); el.className='styled-alert'; el.textContent=msg;
     document.body.appendChild(el); setTimeout(()=>el.remove(),2400);
   }
 
   // ── BIND CONTROLS ──
-  function bindControls() {
-    canvas.addEventListener('click', onCanvasClick);
-    document.getElementById('mono-color').onchange = e => { state.monoColor=e.target.checked; draw(); };
+  function bindControls(){
+    canvas.addEventListener('mousedown',onMouseDown);
+    canvas.addEventListener('mousemove',e=>{ onMouseMove(e); onMouseMoveHover(e); });
+    canvas.addEventListener('mouseup',onMouseUp);
+    canvas.addEventListener('mouseleave',onMouseUp);
+    canvas.addEventListener('click',onCanvasClick);
 
-    document.getElementById('temp-scale').onchange = e => {
+    document.getElementById('mono-color').onchange=e=>{ state.monoColor=e.target.checked; draw(); };
+    document.getElementById('temp-scale').onchange=e=>{
       const prev=state.tempScale; state.tempScale=e.target.value;
       state.xMin=Math.round(toDisplayTemp(fromDisplayTemp(state.xMin,prev),state.tempScale));
       state.xMax=Math.round(toDisplayTemp(fromDisplayTemp(state.xMax,prev),state.tempScale));
       document.getElementById('x-min').value=state.xMin;
       document.getElementById('x-max').value=state.xMax;
       const tick=state.tempScale==='F'?20:10;
-      state.xTick=tick;
-      document.getElementById('x-tick-num').value=tick;
-      document.getElementById('x-tick-range').value=tick;
+      state.xTick=tick; document.getElementById('x-tick-num').value=tick; document.getElementById('x-tick-range').value=tick;
       rebuildPointsList(); draw();
     };
-
-    function b(id,key,fl){ const el=document.getElementById(id); if(!el)return; el.onchange=()=>{state[key]=fl?parseFloat(el.value):parseInt(el.value);draw();}; }
+    function b(id,key,fl){ const el=document.getElementById(id); if(!el)return; el.onchange=()=>{ state[key]=fl?parseFloat(el.value):parseInt(el.value); draw(); }; }
     function bp(rid,nid,key,fl){
       const r=document.getElementById(rid),n=document.getElementById(nid); if(!r||!n)return;
-      r.oninput=()=>{n.value=r.value;state[key]=fl?parseFloat(r.value):parseInt(r.value);draw();};
-      n.onchange=()=>{r.value=n.value;state[key]=fl?parseFloat(n.value):parseInt(n.value);draw();};
+      r.oninput=()=>{ n.value=r.value; state[key]=fl?parseFloat(r.value):parseInt(r.value); draw(); };
+      n.onchange=()=>{ r.value=n.value; state[key]=fl?parseFloat(n.value):parseInt(n.value); draw(); };
     }
     b('x-min','xMin',false); b('x-max','xMax',false);
     b('y-min','yMin',false); b('y-max','yMax',false);
@@ -1039,19 +1303,21 @@ const SC = (() => {
     bp('zoom-range','zoom-num','zoom',false);
     bp('font-range','font-num','fontSize',false);
     bp('default-line-thick-range','default-line-thick-num','_lt',true);
-    document.getElementById('transparent-bg').onchange = e => { state.transparentBg=e.target.checked; draw(); };
-    document.getElementById('add-compound-modal').addEventListener('click', function(e){ if(e.target===this)closeAddCompoundModal(); });
+    document.getElementById('transparent-bg').onchange=e=>{ state.transparentBg=e.target.checked; draw(); };
+    document.getElementById('add-compound-modal').addEventListener('click',function(e){ if(e.target===this) closeAddCompoundModal(); });
   }
 
-  function init() {
-    buildCompoundList(); updateSaList(); bindControls(); draw();
-  }
+  function init(){ buildCompoundList(); updateSaList(); bindControls(); draw(); }
 
   return { init, draw, addPointManual, analyzeSaturation, findIntersections, exportPNG,
-           openAddCompoundModal, closeAddCompoundModal, addModalDataRow, confirmAddCompound };
+           openAddCompoundModal, closeAddCompoundModal, addModalDataRow, confirmAddCompound,
+           validateIUPACName, selectAll, deselectAll };
 })();
 
-window.addEventListener('load', () => SC.init());
+// Expose validateIUPACName to window for inline oninput handler
+window.validateIUPACName = validateIUPACName;
+
+window.addEventListener('load', ()=>SC.init());
 </script>
 </body>
 </html>
