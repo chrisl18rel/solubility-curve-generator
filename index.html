@@ -1387,6 +1387,19 @@ const SC = (() => {
     }
   }
 
+  // Recalculate analysisData for a point at its current coordinates,
+  // preserving showConnector and compoundId so nothing else changes.
+  function refreshPointAnalysis(pt){
+    if(!pt.analysisData||!pt.analysisData.compoundId) return;
+    const compound=SOLUBILITY_DATA.find(c=>c.id===pt.analysisData.compoundId);
+    if(!compound) return;
+    const {type,satLimit,detail1,detail2}=computeAnalysisData(compound,pt.xDisp,pt.yScaled);
+    pt.analysisData.type=type;
+    pt.analysisData.satLimit=satLimit;
+    pt.analysisData.detail1=detail1;
+    pt.analysisData.detail2=detail2;
+  }
+
   function onMouseMove(e){
     if(!drag) return;
     _dragMoved=true;
@@ -1397,15 +1410,14 @@ const SC = (() => {
       const cx=(e.clientX-r.left)*scaleX;
       const cy=(e.clientY-r.top)*scaleY;
       const d=getDims();
-      // Clamp to plot area
       const clampedCX=Math.max(d.pL,Math.min(d.pL+d.pW,cx));
       const clampedCY=Math.max(d.pT,Math.min(d.pT+d.pH,cy));
       const {xD,yS}=canvasToData(clampedCX,clampedCY);
       const pt=state.points[drag.ptIdx];
       pt.xDisp=Math.round(xD*10)/10;
       pt.yScaled=Math.round(yS*10)/10;
-      // If an analysis card is attached, keep it in place relative to the canvas
-      // (cardOffset is already relative to the point, so it follows naturally)
+      // Recalculate analysis card content in real time
+      refreshPointAnalysis(pt);
       draw();
     } else if(drag.mode==='card'){
       const dx=(e.clientX-drag.startMX)*scaleX;
@@ -1418,8 +1430,13 @@ const SC = (() => {
 
   function onMouseUp(){
     if(drag){
-      // If we just finished dragging a point, refresh the sidebar coords display
-      if(drag.mode==='point') rebuildPointsList();
+      if(drag.mode==='point'){
+        const pt=state.points[drag.ptIdx];
+        // Final recalculation on drop to ensure values are precise
+        refreshPointAnalysis(pt);
+        rebuildPointsList();
+        draw();
+      }
       drag=null;
       canvas.style.cursor='crosshair';
     }
@@ -1536,24 +1553,12 @@ const SC = (() => {
     rebuildPointsList(); draw();
   }
 
-  // ── SATURATION ANALYSIS ──
-  function analyzeSaturation(){
-    const tempDisp=parseFloat(document.getElementById('sa-temp').value);
-    const solAmt=parseFloat(document.getElementById('sa-sol').value);
-    const cid=document.getElementById('sa-compound').value;
-    const resultDiv=document.getElementById('analysis-result');
-    if(isNaN(tempDisp)||isNaN(solAmt)||!cid){
-      resultDiv.innerHTML='<div class="analysis-card" style="color:var(--red)">Fill in all three fields.</div>';
-      return;
-    }
-    const compound=SOLUBILITY_DATA.find(c=>c.id===cid);
-    if(!compound) return;
-
+  // ── SATURATION COMPUTATION (reusable — called by both analyzeSaturation and point drag) ──
+  function computeAnalysisData(compound, tempDisp, solAmt){
     const tempC=fromDisplayTemp(tempDisp,state.tempScale);
     const solPer100=solAmt*100/state.waterAmount;
     const satPer100=interpSol(compound,tempC);
     const satScaled=satPer100*state.waterAmount/100;
-
     let type,detail1='',detail2='';
     const diff=solAmt-satScaled;
     if(Math.abs(diff)<=0.5){
@@ -1568,37 +1573,48 @@ const SC = (() => {
     } else {
       type='Supersaturated'; detail1=`${diff.toFixed(1)}g above saturation limit.`; detail2='No temperature change required.';
     }
+    return { type, satLimit:satScaled.toFixed(1), detail1, detail2 };
+  }
 
+  // ── SATURATION ANALYSIS ──
+  function analyzeSaturation(){
+    const tempDisp=parseFloat(document.getElementById('sa-temp').value);
+    const solAmt=parseFloat(document.getElementById('sa-sol').value);
+    const cid=document.getElementById('sa-compound').value;
+    const resultDiv=document.getElementById('analysis-result');
+    if(isNaN(tempDisp)||isNaN(solAmt)||!cid){
+      resultDiv.innerHTML='<div class="analysis-card" style="color:var(--red)">Fill in all three fields.</div>';
+      return;
+    }
+    const compound=SOLUBILITY_DATA.find(c=>c.id===cid);
+    if(!compound) return;
+
+    const {type,satLimit,detail1,detail2}=computeAnalysisData(compound,tempDisp,solAmt);
+    const satScaled=parseFloat(satLimit);
     const typeClass=type==='Unsaturated'?'sat-unsaturated':type==='Saturated'?'sat-saturated':'sat-supersaturated';
     resultDiv.innerHTML=`
       <div class="analysis-card">
         <div class="sat-type ${typeClass}">${type}</div>
-        <div class="sat-row"><span>Sat. limit at ${tempDisp}${tempUnit(state.tempScale)}:</span><b>${satScaled.toFixed(1)}g / ${state.waterAmount}g H₂O</b></div>
+        <div class="sat-row"><span>Sat. limit at ${tempDisp}${tempUnit(state.tempScale)}:</span><b>${satLimit}g / ${state.waterAmount}g H₂O</b></div>
         <div class="sat-row"><span>Amount dissolved:</span><b>${solAmt}g</b></div>
         ${detail1?`<div style="margin-top:5px;color:var(--text-dim)">${detail1}</div>`:''}
         ${detail2?`<div style="color:var(--text-dim)">${detail2}</div>`:''}
       </div>`;
 
     const showCard=document.getElementById('sa-show-on-graph').checked;
-    const ad={type,satLimit:satScaled.toFixed(1),detail1,detail2,showConnector:true};
+    // Store compoundId so the card can be recalculated when the point is dragged
+    const ad={type,satLimit,detail1,detail2,showConnector:true,compoundId:cid};
 
-    // Check if the user selected an existing point from the dropdown
     const fromPointSel=document.getElementById('sa-from-point');
     const fromPointVal=fromPointSel._lastSelectedIdx;
     const sourcePoint=(fromPointVal!==undefined&&fromPointVal!=='')?state.points[parseInt(fromPointVal)]:null;
 
     if(sourcePoint){
-      // Attach analysis to the existing point — no new point created
-      const doAttach=()=>{
-        sourcePoint.analysisData=ad;
-        sourcePoint.showAnalysisOnGraph=showCard;
-        sourcePoint.cardOffsetX=0; sourcePoint.cardOffsetY=0;
-        rebuildPointsList(); draw();
-      };
-      // If the point already had an analysis card, just replace silently
-      doAttach();
+      sourcePoint.analysisData=ad;
+      sourcePoint.showAnalysisOnGraph=showCard;
+      sourcePoint.cardOffsetX=0; sourcePoint.cardOffsetY=0;
+      rebuildPointsList(); draw();
     } else if(document.getElementById('sa-plot-point').checked){
-      // No existing point selected — create a new one (with keep/replace dialog if needed)
       const newPt={xDisp:tempDisp,yScaled:Math.round(solAmt*10)/10,...defaultProps(),showAnalysisOnGraph:showCard,analysisData:ad};
       const existingWithCards=state.points.filter(p=>p.analysisData&&p.showAnalysisOnGraph);
       if(existingWithCards.length>0){
