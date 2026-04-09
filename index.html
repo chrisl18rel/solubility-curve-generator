@@ -281,7 +281,7 @@
       <p>Interactive solubility curves for chemistry instruction</p>
     </div>
   </div>
-  <div class="app-version">v1.6</div>
+  <div class="app-version">v1.7</div>
 </header>
 
 <div class="app-body">
@@ -358,6 +358,10 @@
       <div class="slider-input-row">
         <input type="range" id="font-range" min="8" max="22" value="12" />
         <input type="number" id="font-num" value="12" min="8" max="22" step="1" />
+      </div>
+      <div class="display-divider"></div>
+      <div class="toggle-row">
+        <label class="toggle-label"><input type="checkbox" id="show-grid" checked /> Show background grid</label>
       </div>
     </div>
 
@@ -1021,6 +1025,7 @@ const SC = (() => {
     zoom: 100, fontSize: 12,
     points: [],
     transparentBg: false,
+    showGrid: true,
     graphTitle: '',
     titleFontSize: 16,
     titleColor: '#222222',
@@ -1155,9 +1160,11 @@ const SC = (() => {
     }
 
     // Grid
-    ctx.strokeStyle='#e0e0e0'; ctx.lineWidth=0.5;
-    for(let x=state.xMin;x<=state.xMax+0.001;x+=state.xTick){ ctx.beginPath(); ctx.moveTo(cxT(x),d.pT); ctx.lineTo(cxT(x),d.pT+d.pH); ctx.stroke(); }
-    for(let y=state.yMin;y<=state.yMax+0.001;y+=state.yTick){ const cy=cyS(y*state.waterAmount/100); ctx.beginPath(); ctx.moveTo(d.pL,cy); ctx.lineTo(d.pL+d.pW,cy); ctx.stroke(); }
+    if(state.showGrid){
+      ctx.strokeStyle='#e0e0e0'; ctx.lineWidth=0.5;
+      for(let x=state.xMin;x<=state.xMax+0.001;x+=state.xTick){ ctx.beginPath(); ctx.moveTo(cxT(x),d.pT); ctx.lineTo(cxT(x),d.pT+d.pH); ctx.stroke(); }
+      for(let y=state.yMin;y<=state.yMax+0.001;y+=state.yTick){ const cy=cyS(y*state.waterAmount/100); ctx.beginPath(); ctx.moveTo(d.pL,cy); ctx.lineTo(d.pL+d.pW,cy); ctx.stroke(); }
+    }
 
     // Axis border
     ctx.strokeStyle='#333'; ctx.lineWidth=1.5*d.z;
@@ -1830,6 +1837,7 @@ const SC = (() => {
     bp('font-range','font-num','fontSize',false);
     bp('default-line-thick-range','default-line-thick-num','_lt',true);
     document.getElementById('transparent-bg').onchange=e=>{ state.transparentBg=e.target.checked; draw(); };
+    document.getElementById('show-grid').onchange=e=>{ state.showGrid=e.target.checked; draw(); };
     document.getElementById('add-compound-modal').addEventListener('click',function(e){ if(e.target===this) closeAddCompoundModal(); });
   }
 
