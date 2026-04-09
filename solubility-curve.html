@@ -7,32 +7,16 @@
   <title>Solubility Curve Generator</title>
   <style>
     :root {
-      --bg: #1a1a2e;
-      --surface: #16213e;
-      --surface2: #0f3460;
-      --accent: #4a90e2;
-      --accent2: #e94560;
-      --text: #e0e0e0;
-      --text-dim: #8a8a9a;
-      --border: #2a2a4a;
-      --border2: #3a3a5a;
-      --canvas-bg: #ffffff;
-      --green: #4caf50;
-      --yellow: #ffc107;
-      --red: #ef5350;
-      --radius: 6px;
+      --bg: #1a1a2e; --surface: #16213e; --surface2: #0f3460;
+      --accent: #4a90e2; --accent2: #e94560;
+      --text: #e0e0e0; --text-dim: #8a8a9a;
+      --border: #2a2a4a; --border2: #3a3a5a;
+      --green: #4caf50; --yellow: #ffc107; --red: #ef5350; --radius: 6px;
     }
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body { background: var(--bg); color: var(--text); font-family: 'Segoe UI', system-ui, sans-serif; font-size: 13px; min-height: 100vh; }
 
-    .app-header {
-      background: var(--surface);
-      border-bottom: 2px solid var(--accent);
-      padding: 14px 20px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-    }
+    .app-header { background: var(--surface); border-bottom: 2px solid var(--accent); padding: 14px 20px; display: flex; align-items: center; justify-content: space-between; }
     .app-logo { display: flex; align-items: center; gap: 12px; }
     .logo-icon { font-size: 28px; }
     .logo-text h1 { font-size: 18px; font-weight: 700; color: var(--text); }
@@ -41,54 +25,28 @@
 
     .app-body { display: flex; height: calc(100vh - 65px); overflow: hidden; }
 
-    /* ── SIDEBAR ── */
+    /* SIDEBAR */
     .controls-panel {
-      width: 300px;
-      min-width: 300px;
-      background: var(--surface);
-      border-right: 1px solid var(--border);
-      overflow-y: auto;
-      padding: 12px;
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
+      width: 308px; min-width: 308px; background: var(--surface); border-right: 1px solid var(--border);
+      overflow-y: scroll; padding: 12px; display: flex; flex-direction: column; gap: 10px;
     }
-    .controls-panel::-webkit-scrollbar { width: 5px; }
-    .controls-panel::-webkit-scrollbar-track { background: var(--bg); }
+    .controls-panel::-webkit-scrollbar { width: 6px; }
+    .controls-panel::-webkit-scrollbar-track { background: rgba(0,0,0,0.3); border-radius: 3px; }
     .controls-panel::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 3px; }
+    .controls-panel::-webkit-scrollbar-thumb:hover { background: var(--accent); }
 
-    .control-group {
-      background: var(--surface2);
-      border: 1px solid var(--border2);
-      border-radius: var(--radius);
-      padding: 10px 12px;
-    }
-    .group-title {
-      font-size: 10px;
-      font-weight: 700;
-      letter-spacing: 1.2px;
-      color: var(--accent);
-      margin-bottom: 8px;
-      text-transform: uppercase;
-    }
+    .control-group { background: var(--surface2); border: 1px solid var(--border2); border-radius: var(--radius); padding: 10px 12px; }
+    .group-title { font-size: 10px; font-weight: 700; letter-spacing: 1.2px; color: var(--accent); margin-bottom: 8px; text-transform: uppercase; }
     label { display: block; font-size: 11px; color: var(--text-dim); margin-bottom: 3px; margin-top: 6px; }
     label:first-of-type { margin-top: 0; }
     input[type="number"], input[type="text"], select {
-      width: 100%;
-      background: var(--bg);
-      border: 1px solid var(--border2);
-      border-radius: 4px;
-      color: var(--text);
-      font-size: 12px;
-      padding: 5px 8px;
-      outline: none;
+      width: 100%; background: var(--bg); border: 1px solid var(--border2);
+      border-radius: 4px; color: var(--text); font-size: 12px; padding: 5px 8px; outline: none;
     }
     input[type="number"]:focus, input[type="text"]:focus, select:focus { border-color: var(--accent); }
     select option { background: var(--bg); }
 
     .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
-    .three-col { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 6px; }
-
     .slider-input-row { display: flex; align-items: center; gap: 6px; }
     .slider-input-row input[type="range"] { flex: 1; accent-color: var(--accent); }
     .slider-input-row input[type="number"] { width: 60px; min-width: 60px; }
@@ -98,147 +56,132 @@
     .toggle-row { margin-bottom: 4px; }
 
     .export-btn, .action-btn {
-      width: 100%;
-      background: var(--accent);
-      color: #fff;
-      border: none;
-      border-radius: var(--radius);
-      padding: 8px;
-      font-size: 12px;
-      font-weight: 600;
-      cursor: pointer;
-      margin-top: 6px;
-      transition: background 0.15s;
+      width: 100%; background: var(--accent); color: #fff;
+      border: none; border-radius: var(--radius); padding: 8px;
+      font-size: 12px; font-weight: 600; cursor: pointer; margin-top: 6px; transition: background 0.15s;
     }
     .export-btn:hover { background: #357abd; }
     .action-btn { background: var(--surface2); border: 1px solid var(--border2); color: var(--text); }
     .action-btn:hover { background: var(--border2); }
-    .action-btn.danger { color: var(--red); border-color: var(--red); }
-    .action-btn.danger:hover { background: rgba(239,83,80,0.15); }
+    .action-btn.primary { background: var(--accent); color: #fff; border-color: var(--accent); }
+    .action-btn.primary:hover { background: #357abd; }
 
-    /* Compound list */
-    .compound-list { display: flex; flex-direction: column; gap: 4px; max-height: 280px; overflow-y: auto; padding-right: 2px; }
-    .compound-list::-webkit-scrollbar { width: 4px; }
-    .compound-list::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 2px; }
+    /* Compound list — always-visible scrollbar */
+    .compound-list {
+      display: flex; flex-direction: column; gap: 4px;
+      max-height: 260px; overflow-y: scroll; padding-right: 3px;
+    }
+    .compound-list::-webkit-scrollbar { width: 5px; }
+    .compound-list::-webkit-scrollbar-track { background: rgba(0,0,0,0.3); border-radius: 3px; }
+    .compound-list::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 3px; }
+    .compound-list::-webkit-scrollbar-thumb:hover { background: var(--accent); }
 
     .compound-row {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      background: var(--bg);
-      border: 1px solid var(--border);
-      border-radius: 4px;
-      padding: 5px 7px;
-      cursor: pointer;
-      transition: border-color 0.1s;
+      display: flex; align-items: center; gap: 5px;
+      background: var(--bg); border: 1px solid var(--border);
+      border-radius: 4px; padding: 5px 7px; cursor: pointer; transition: border-color 0.1s;
     }
     .compound-row.selected { border-color: var(--accent); background: rgba(74,144,226,0.08); }
     .compound-row input[type="checkbox"] { accent-color: var(--accent); flex-shrink: 0; }
-    .compound-name { flex: 1; font-size: 11px; }
-    .compound-formula { font-size: 10px; color: var(--text-dim); }
-    .compound-color-swatch {
-      width: 14px; height: 14px; border-radius: 3px; border: 1px solid var(--border2);
-      cursor: pointer; flex-shrink: 0;
-    }
+    .compound-name { flex: 1; font-size: 11px; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .compound-formula { font-size: 10px; color: var(--text-dim); flex-shrink: 0; }
+    .compound-color-swatch { width: 16px; height: 16px; border-radius: 3px; border: 1px solid var(--border2); cursor: pointer; flex-shrink: 0; padding: 0; }
+    .compound-delete-btn { background: none; border: none; color: var(--text-dim); cursor: pointer; font-size: 14px; padding: 0 1px; flex-shrink: 0; line-height: 1; }
+    .compound-delete-btn:hover { color: var(--red); }
 
-    /* Points list */
-    .points-list { display: flex; flex-direction: column; gap: 4px; }
-    .point-row {
-      display: flex; align-items: center; gap: 5px;
-      background: var(--bg); border: 1px solid var(--border);
-      border-radius: 4px; padding: 4px 7px;
-    }
+    /* Point cards */
+    .points-list { display: flex; flex-direction: column; gap: 7px; }
+    .point-card { background: var(--bg); border: 1px solid var(--border); border-radius: 6px; padding: 9px 10px; }
+    .point-card-header { display: flex; align-items: center; gap: 6px; margin-bottom: 7px; }
     .point-label-badge {
-      width: 18px; height: 18px; border-radius: 50%; background: var(--accent2);
+      width: 20px; height: 20px; border-radius: 50%; background: var(--accent2);
       color: #fff; font-size: 10px; font-weight: 700;
       display: flex; align-items: center; justify-content: center; flex-shrink: 0;
     }
-    .point-coords { flex: 1; font-size: 11px; }
-    .point-delete { background: none; border: none; color: var(--text-dim); cursor: pointer; font-size: 14px; padding: 0 2px; }
+    .point-coords { flex: 1; font-size: 11px; font-weight: 600; }
+    .point-delete { background: none; border: none; color: var(--text-dim); cursor: pointer; font-size: 15px; padding: 0; }
     .point-delete:hover { color: var(--red); }
+    .point-toggles { display: flex; flex-direction: column; gap: 4px; margin-bottom: 6px; }
+    .point-toggle { display: flex; align-items: center; gap: 6px; font-size: 11px; color: var(--text); cursor: pointer; }
+    .point-toggle input[type="checkbox"] { accent-color: var(--accent); }
+    .point-color-row { display: flex; align-items: center; gap: 6px; margin-top: 5px; }
+    .point-color-row label { margin: 0; font-size: 10px; color: var(--text-dim); flex-shrink: 0; }
+    .point-color-swatch { width: 30px; height: 20px; border-radius: 3px; border: 1px solid var(--border2); cursor: pointer; padding: 0; }
+    .point-thick-row { display: flex; align-items: center; gap: 5px; margin-top: 5px; }
+    .point-thick-row label { margin: 0; font-size: 10px; color: var(--text-dim); white-space: nowrap; flex-shrink: 0; }
+    .point-thick-row input[type="range"] { flex: 1; accent-color: var(--accent); }
+    .point-thick-row input[type="number"] { width: 50px; min-width: 50px; }
 
-    /* Analysis card */
-    .analysis-card {
-      background: var(--bg);
-      border: 1px solid var(--border2);
-      border-radius: 4px;
-      padding: 8px 10px;
-      font-size: 11px;
-      line-height: 1.6;
-    }
-    .analysis-card .sat-type {
-      font-size: 13px;
-      font-weight: 700;
-      margin-bottom: 4px;
-    }
+    /* Analysis card in sidebar */
+    .analysis-card { background: var(--bg); border: 1px solid var(--border2); border-radius: 4px; padding: 9px 10px; font-size: 11px; line-height: 1.7; }
+    .analysis-card .sat-type { font-size: 13px; font-weight: 700; margin-bottom: 5px; }
     .sat-unsaturated { color: var(--green); }
     .sat-saturated { color: var(--yellow); }
     .sat-supersaturated { color: var(--red); }
+    .sat-row { display: flex; justify-content: space-between; gap: 8px; margin-top: 2px; }
+    .sat-row span { color: var(--text-dim); }
+    .sat-row b { color: var(--text); }
 
-    /* Intersection list */
-    .intersect-list { display: flex; flex-direction: column; gap: 4px; max-height: 160px; overflow-y: auto; }
+    /* Intersections list — always-visible scrollbar */
+    .intersect-list { display: flex; flex-direction: column; gap: 4px; max-height: 200px; overflow-y: scroll; margin-top: 6px; }
+    .intersect-list::-webkit-scrollbar { width: 5px; }
+    .intersect-list::-webkit-scrollbar-track { background: rgba(0,0,0,0.3); border-radius: 3px; }
+    .intersect-list::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 3px; }
+    .intersect-list::-webkit-scrollbar-thumb:hover { background: var(--accent); }
     .intersect-item {
-      background: var(--bg); border: 1px solid var(--border);
-      border-radius: 4px; padding: 5px 8px; font-size: 11px;
-      cursor: pointer; transition: border-color 0.1s;
+      background: var(--bg); border: 1px solid var(--border); border-radius: 4px;
+      padding: 6px 9px; font-size: 11px; cursor: pointer; transition: border-color 0.1s; line-height: 1.5;
     }
-    .intersect-item:hover { border-color: var(--accent); }
+    .intersect-item:hover { border-color: var(--accent); background: rgba(74,144,226,0.06); }
+
+    /* Add Compound Modal */
+    .modal-overlay {
+      position: fixed; inset: 0; background: rgba(0,0,0,0.65); z-index: 1000;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .modal-box {
+      background: var(--surface); border: 1px solid var(--border2); border-radius: 10px;
+      padding: 22px 24px; width: 400px; max-width: 95vw;
+      box-shadow: 0 8px 40px rgba(0,0,0,0.5); max-height: 90vh; overflow-y: auto;
+    }
+    .modal-title { font-size: 15px; font-weight: 700; margin-bottom: 14px; }
+    .modal-field { margin-bottom: 10px; }
+    .modal-field label { margin-bottom: 4px; font-size: 11px; color: var(--text-dim); display: block; }
+    .modal-field input[type="text"], .modal-field input[type="number"] { width: 100%; }
+    .modal-note { font-size: 10px; color: var(--text-dim); margin-bottom: 6px; line-height: 1.5; }
+    .modal-data-header { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-bottom: 4px; }
+    .modal-data-header span { font-size: 10px; color: var(--text-dim); text-align: center; font-weight: 600; }
+    .modal-data-grid { display: flex; flex-direction: column; gap: 4px; max-height: 180px; overflow-y: auto; margin-bottom: 6px; }
+    .modal-data-grid::-webkit-scrollbar { width: 4px; }
+    .modal-data-grid::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 2px; }
+    .modal-data-row { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+    .modal-add-row { font-size: 11px; color: var(--accent); background: none; border: none; cursor: pointer; margin-bottom: 6px; padding: 0; }
+    .modal-add-row:hover { text-decoration: underline; }
+    .modal-btn-row { display: flex; gap: 8px; margin-top: 12px; }
+    .modal-btn { flex: 1; padding: 8px; border-radius: 5px; font-size: 12px; font-weight: 600; cursor: pointer; border: none; }
+    .modal-btn.confirm { background: var(--accent); color: #fff; }
+    .modal-btn.confirm:hover { background: #357abd; }
+    .modal-btn.cancel { background: var(--surface2); color: var(--text-dim); border: 1px solid var(--border2); }
+    .modal-btn.cancel:hover { background: var(--border2); }
 
     /* Alert */
     .styled-alert {
       position: fixed; top: 20px; left: 50%; transform: translateX(-50%);
-      background: var(--surface2); border: 1px solid var(--accent);
-      color: var(--text); border-radius: var(--radius);
-      padding: 10px 20px; font-size: 13px; z-index: 9999;
-      box-shadow: 0 4px 20px rgba(0,0,0,0.4);
-      animation: fadeInDown 0.2s ease;
-      pointer-events: none;
+      background: var(--surface2); border: 1px solid var(--accent); color: var(--text);
+      border-radius: var(--radius); padding: 10px 20px; font-size: 13px; z-index: 9999;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.4); animation: fadeInDown 0.2s ease; pointer-events: none;
     }
-    @keyframes fadeInDown { from { opacity: 0; transform: translateX(-50%) translateY(-10px); } to { opacity: 1; transform: translateX(-50%) translateY(0); } }
+    @keyframes fadeInDown { from { opacity:0; transform: translateX(-50%) translateY(-10px); } to { opacity:1; transform: translateX(-50%) translateY(0); } }
 
     .display-divider { height: 1px; background: var(--border); margin: 8px 0; }
-
-    /* ── PREVIEW ── */
-    .preview-panel {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      overflow: hidden;
-      background: var(--bg);
-    }
-    .preview-label {
-      padding: 8px 14px;
-      font-size: 11px;
-      color: var(--text-dim);
-      background: var(--surface);
-      border-bottom: 1px solid var(--border);
-      flex-shrink: 0;
-    }
-    .canvas-scroll-wrapper {
-      flex: 1;
-      overflow: auto;
-      padding: 16px;
-      display: flex;
-      align-items: flex-start;
-      justify-content: flex-start;
-    }
-    #solubility-canvas {
-      display: block;
-      cursor: crosshair;
-      border-radius: 4px;
-      box-shadow: 0 4px 24px rgba(0,0,0,0.4);
-    }
-
-    /* color mode toggle */
-    .btn-group { display: flex; gap: 5px; }
-    .style-btn {
-      flex: 1; background: var(--bg); border: 1px solid var(--border2);
-      color: var(--text-dim); border-radius: 4px; padding: 5px 4px;
-      font-size: 11px; cursor: pointer; transition: all 0.1s;
-    }
-    .style-btn.active { background: var(--accent); border-color: var(--accent); color: #fff; }
-
     .mini-note { font-size: 10px; color: var(--text-dim); margin-top: 4px; line-height: 1.4; }
+    .section-label { font-size: 10px; color: var(--text-dim); font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; margin: 6px 0 4px; }
+
+    /* Preview */
+    .preview-panel { flex: 1; display: flex; flex-direction: column; overflow: hidden; background: var(--bg); }
+    .preview-label { padding: 8px 14px; font-size: 11px; color: var(--text-dim); background: var(--surface); border-bottom: 1px solid var(--border); flex-shrink: 0; }
+    .canvas-scroll-wrapper { flex: 1; overflow: auto; padding: 16px; display: flex; align-items: flex-start; justify-content: flex-start; }
+    #solubility-canvas { display: block; cursor: crosshair; border-radius: 4px; box-shadow: 0 4px 24px rgba(0,0,0,0.4); }
   </style>
 </head>
 <body>
@@ -251,7 +194,7 @@
       <p>Interactive solubility curves for chemistry instruction</p>
     </div>
   </div>
-  <div class="app-version">v1.0</div>
+  <div class="app-version">v1.1</div>
 </header>
 
 <div class="app-body">
@@ -263,70 +206,47 @@
       <div class="compound-list" id="compound-list"></div>
       <div class="display-divider"></div>
       <div class="toggle-row">
-        <label class="toggle-label">
-          <input type="checkbox" id="mono-color" />
-          All lines black
-        </label>
+        <label class="toggle-label"><input type="checkbox" id="mono-color" /> All lines black</label>
       </div>
+      <button class="action-btn" style="margin-top:8px;" onclick="SC.openAddCompoundModal()">＋ Add Custom Compound</button>
     </div>
 
     <!-- AXES & SCALE -->
     <div class="control-group">
       <div class="group-title">AXES &amp; SCALE</div>
-
       <label>Temperature Scale</label>
       <select id="temp-scale">
         <option value="C">Celsius (°C)</option>
         <option value="F">Fahrenheit (°F)</option>
         <option value="K">Kelvin (K)</option>
       </select>
-
       <div class="two-col" style="margin-top:6px;">
-        <div>
-          <label>Temp Min</label>
-          <input type="number" id="x-min" value="0" step="5" />
-        </div>
-        <div>
-          <label>Temp Max</label>
-          <input type="number" id="x-max" value="100" step="5" />
-        </div>
+        <div><label>Temp Min</label><input type="number" id="x-min" value="0" step="5" /></div>
+        <div><label>Temp Max</label><input type="number" id="x-max" value="100" step="5" /></div>
       </div>
-
       <label>Water Amount (g)</label>
       <input type="number" id="water-amount" value="100" min="1" step="10" />
-      <div class="mini-note">Default 100 g. Solubility values scale proportionally.</div>
-
+      <div class="mini-note">Database values are per 100 g H₂O. Changing this scales the y-axis labels (e.g. 200 g → 2× saturation values).</div>
       <div class="two-col" style="margin-top:4px;">
-        <div>
-          <label>Sol. Min (y)</label>
-          <input type="number" id="y-min" value="0" step="10" />
-        </div>
-        <div>
-          <label>Sol. Max (y)</label>
-          <input type="number" id="y-max" value="260" step="10" />
-        </div>
+        <div><label>Sol. Min (y)</label><input type="number" id="y-min" value="0" step="10" /></div>
+        <div><label>Sol. Max (y)</label><input type="number" id="y-max" value="260" step="10" /></div>
       </div>
-
       <div class="display-divider"></div>
-
       <label>X Tick Interval</label>
       <div class="slider-input-row">
         <input type="range" id="x-tick-range" min="5" max="50" value="10" step="5" />
         <input type="number" id="x-tick-num" value="10" min="5" max="50" step="5" />
       </div>
-
       <label>Y Tick Interval</label>
       <div class="slider-input-row">
-        <input type="range" id="y-tick-range" min="10" max="100" value="20" step="10" />
-        <input type="number" id="y-tick-num" value="20" min="10" max="100" step="10" />
+        <input type="range" id="y-tick-range" min="5" max="200" value="20" step="5" />
+        <input type="number" id="y-tick-num" value="20" min="5" max="200" step="5" />
       </div>
-
       <label>Zoom (%)</label>
       <div class="slider-input-row">
         <input type="range" id="zoom-range" min="40" max="200" value="100" />
         <input type="number" id="zoom-num" value="100" min="40" max="200" step="5" />
       </div>
-
       <label>Font Size (px)</label>
       <div class="slider-input-row">
         <input type="range" id="font-range" min="8" max="22" value="12" />
@@ -334,32 +254,38 @@
       </div>
     </div>
 
-    <!-- POINTS -->
+    <!-- PLOT POINTS -->
     <div class="control-group">
       <div class="group-title">PLOT POINTS</div>
-      <div class="mini-note" style="margin-bottom:6px;">Click on the graph to place a point, or enter manually below.</div>
-
-      <label>Temperature</label>
-      <input type="number" id="pt-x" placeholder="e.g. 60" />
-      <label>Solubility (g / water amount)</label>
-      <input type="number" id="pt-y" placeholder="e.g. 85" />
-      <button class="action-btn" onclick="SC.addPointManual()">＋ Add Point</button>
-
+      <div class="mini-note" style="margin-bottom:8px;">Click the graph to place a point, or enter coordinates manually.</div>
+      <div class="two-col">
+        <div><label>Temperature</label><input type="number" id="pt-x" placeholder="e.g. 60" /></div>
+        <div><label>Solubility (g)</label><input type="number" id="pt-y" placeholder="e.g. 85" /></div>
+      </div>
       <div class="display-divider"></div>
-
+      <div class="section-label">Defaults for new points</div>
       <div class="toggle-row">
-        <label class="toggle-label">
-          <input type="checkbox" id="show-coord-label" checked />
-          Show ordered pair on point
-        </label>
+        <label class="toggle-label"><input type="checkbox" id="show-coord-label" checked /> Show ordered pair label</label>
       </div>
       <div class="toggle-row">
-        <label class="toggle-label">
-          <input type="checkbox" id="show-dotted-lines" checked />
-          Show dotted projection lines
-        </label>
+        <label class="toggle-label"><input type="checkbox" id="show-dotted-lines" checked /> Show dotted projection lines</label>
       </div>
-
+      <div class="two-col" style="margin-top:6px;">
+        <div>
+          <label>Dot color</label>
+          <input type="color" id="default-dot-color" value="#e94560" style="width:100%;height:28px;border:1px solid var(--border2);border-radius:4px;background:var(--bg);cursor:pointer;padding:2px;" />
+        </div>
+        <div>
+          <label>Line color</label>
+          <input type="color" id="default-line-color" value="#555555" style="width:100%;height:28px;border:1px solid var(--border2);border-radius:4px;background:var(--bg);cursor:pointer;padding:2px;" />
+        </div>
+      </div>
+      <label>Dotted line thickness</label>
+      <div class="slider-input-row">
+        <input type="range" id="default-line-thick-range" min="0.5" max="4" step="0.5" value="1" />
+        <input type="number" id="default-line-thick-num" value="1" min="0.5" max="4" step="0.5" style="width:56px;" />
+      </div>
+      <button class="action-btn primary" onclick="SC.addPointManual()" style="margin-top:8px;">＋ Add Point</button>
       <div class="display-divider"></div>
       <div class="points-list" id="points-list"></div>
     </div>
@@ -367,559 +293,606 @@
     <!-- SATURATION ANALYSIS -->
     <div class="control-group">
       <div class="group-title">SATURATION ANALYSIS</div>
-      <label>Temperature</label>
-      <input type="number" id="sa-temp" placeholder="e.g. 50" />
-      <label>Solute Dissolved (g / water amount)</label>
-      <input type="number" id="sa-sol" placeholder="e.g. 70" />
+      <div class="two-col">
+        <div><label>Temperature</label><input type="number" id="sa-temp" placeholder="e.g. 50" /></div>
+        <div><label>Dissolved (g)</label><input type="number" id="sa-sol" placeholder="e.g. 70" /></div>
+      </div>
       <label>Compound</label>
-      <select id="sa-compound">
-        <option value="">-- select compound --</option>
-      </select>
-      <button class="action-btn" onclick="SC.analyzeSaturation()">Analyze</button>
+      <select id="sa-compound"><option value="">-- select compound --</option></select>
+      <div class="display-divider"></div>
+      <div class="toggle-row">
+        <label class="toggle-label"><input type="checkbox" id="sa-plot-point" checked /> Plot this point on graph</label>
+      </div>
+      <div class="toggle-row">
+        <label class="toggle-label"><input type="checkbox" id="sa-show-on-graph" checked /> Show analysis card on graph</label>
+      </div>
+      <button class="action-btn primary" onclick="SC.analyzeSaturation()" style="margin-top:6px;">Analyze</button>
       <div id="analysis-result" style="margin-top:6px;"></div>
     </div>
 
     <!-- INTERSECTIONS -->
     <div class="control-group">
       <div class="group-title">INTERSECTIONS</div>
-      <div class="mini-note" style="margin-bottom:5px;">Compounds with equal solubility at same temperature</div>
+      <div class="mini-note" style="margin-bottom:5px;">Equal solubility between compound pairs. Click any result to plot the point.</div>
       <button class="action-btn" onclick="SC.findIntersections()">Find Intersections</button>
-      <div class="intersect-list" id="intersect-list" style="margin-top:6px;"></div>
+      <div class="intersect-list" id="intersect-list"></div>
     </div>
 
     <!-- EXPORT -->
     <div class="control-group">
       <div class="group-title">EXPORT</div>
-      <div class="toggle-row">
-        <label class="toggle-label">
-          <input type="checkbox" id="transparent-bg" />
-          Transparent background
-        </label>
-      </div>
+      <div class="toggle-row"><label class="toggle-label"><input type="checkbox" id="transparent-bg" /> Transparent background</label></div>
       <button class="export-btn" onclick="SC.exportPNG()">⬇ Export PNG</button>
     </div>
 
   </aside>
 
   <div class="preview-panel">
-    <div class="preview-label">Live Preview — click on graph to place points</div>
+    <div class="preview-label">Live Preview — click the graph to place points</div>
     <div class="canvas-scroll-wrapper">
       <canvas id="solubility-canvas"></canvas>
     </div>
   </div>
 </div>
 
+<!-- ADD COMPOUND MODAL -->
+<div class="modal-overlay" id="add-compound-modal" style="display:none;">
+  <div class="modal-box">
+    <div class="modal-title">➕ Add Custom Compound</div>
+    <div class="modal-field">
+      <label>Compound Name</label>
+      <input type="text" id="modal-name" placeholder="e.g. Potassium Nitrate" />
+    </div>
+    <div class="modal-field">
+      <label>Formula (Unicode subscripts OK, or plain text)</label>
+      <input type="text" id="modal-formula" placeholder="e.g. KNO₃ or KNO3" />
+    </div>
+    <div class="modal-field">
+      <label>Line Color</label>
+      <input type="color" id="modal-color" value="#ff6b35" style="width:100%;height:30px;border:1px solid var(--border2);border-radius:4px;background:var(--bg);cursor:pointer;padding:2px;" />
+    </div>
+    <div class="modal-note">Enter solubility data: grams of solute per 100 g H₂O at each temperature in °C. Minimum 2 points required.</div>
+    <div class="modal-data-header"><span>Temp (°C)</span><span>g / 100 g H₂O</span></div>
+    <div class="modal-data-grid" id="modal-data-grid"></div>
+    <button class="modal-add-row" onclick="SC.addModalDataRow()">+ Add another row</button>
+    <div class="modal-btn-row">
+      <button class="modal-btn cancel" onclick="SC.closeAddCompoundModal()">Cancel</button>
+      <button class="modal-btn confirm" onclick="SC.confirmAddCompound()">Add Compound</button>
+    </div>
+  </div>
+</div>
+
 <script>
-// ──────────────────────────────────────────
-// SOLUBILITY DATA (embedded)
-// ──────────────────────────────────────────
-const SOLUBILITY_DATA = [
-  { id:"KNO3", name:"Potassium Nitrate", formula:"KNO\u2083", defaultColor:"#e53935",
-    data:[[0,13.3],[10,20.9],[20,31.6],[30,45.8],[40,63.9],[50,85.5],[60,110],[70,138],[80,169],[90,202],[100,246]] },
-  { id:"NaCl", name:"Sodium Chloride", formula:"NaCl", defaultColor:"#1e88e5",
-    data:[[0,35.7],[10,35.8],[20,36.0],[30,36.3],[40,36.6],[50,37.0],[60,37.3],[70,37.8],[80,38.4],[90,39.0],[100,39.8]] },
-  { id:"KCl", name:"Potassium Chloride", formula:"KCl", defaultColor:"#43a047",
-    data:[[0,27.6],[10,31.0],[20,34.0],[30,37.0],[40,40.0],[50,42.6],[60,45.5],[70,48.3],[80,51.1],[90,54.0],[100,56.7]] },
-  { id:"NH4Cl", name:"Ammonium Chloride", formula:"NH\u2084Cl", defaultColor:"#8e24aa",
-    data:[[0,29.4],[10,33.3],[20,37.2],[30,41.4],[40,45.8],[50,50.4],[60,55.2],[70,60.2],[80,65.6],[90,71.3],[100,77.3]] },
-  { id:"KBr", name:"Potassium Bromide", formula:"KBr", defaultColor:"#f4511e",
-    data:[[0,53.5],[10,59.5],[20,65.2],[30,70.6],[40,75.5],[50,80.2],[60,85.5],[70,90.0],[80,95.0],[90,99.2],[100,104]] },
-  { id:"NaNO3", name:"Sodium Nitrate", formula:"NaNO\u2083", defaultColor:"#00acc1",
-    data:[[0,73.0],[10,80.0],[20,87.6],[30,96.0],[40,104],[50,114],[60,124],[70,134],[80,148],[90,163],[100,180]] },
-  { id:"CuSO4", name:"Copper(II) Sulfate", formula:"CuSO\u2084", defaultColor:"#039be5",
-    data:[[0,14.3],[10,17.4],[20,20.7],[30,25.0],[40,28.5],[50,33.3],[60,40.0],[70,47.0],[80,55.0],[90,63.0],[100,75.4]] },
-  { id:"NaC2H3O2", name:"Sodium Acetate", formula:"NaC\u2082H\u2083O\u2082", defaultColor:"#6d4c41",
-    data:[[0,36.2],[10,40.8],[20,46.5],[30,54.5],[40,65.5],[50,82.3],[60,139],[70,153],[80,170],[90,188],[100,208]] },
-  { id:"Ce2SO43", name:"Cerium(III) Sulfate", formula:"Ce\u2082(SO\u2084)\u2083", defaultColor:"#546e7a",
-    data:[[0,21.4],[10,17.0],[20,10.1],[30,7.0],[40,5.0],[50,3.9],[60,3.3],[70,2.8],[80,2.4],[90,2.1],[100,1.8]] },
-  { id:"Li2SO4", name:"Lithium Sulfate", formula:"Li\u2082SO\u2084", defaultColor:"#c0ca33",
-    data:[[0,35.5],[10,35.0],[20,34.2],[30,33.4],[40,32.6],[50,31.9],[60,31.0],[70,30.1],[80,29.3],[90,28.4],[100,27.6]] },
-  { id:"KI", name:"Potassium Iodide", formula:"KI", defaultColor:"#ff7043",
-    data:[[0,128],[10,136],[20,144],[30,152],[40,160],[50,168],[60,176],[70,184],[80,192],[90,200],[100,208]] },
-  { id:"Ca(OH)2", name:"Calcium Hydroxide", formula:"Ca(OH)\u2082", defaultColor:"#26a69a",
-    data:[[0,0.189],[10,0.182],[20,0.173],[30,0.160],[40,0.141],[50,0.128],[60,0.116],[70,0.106],[80,0.094],[90,0.085],[100,0.077]] },
-  { id:"NaOH", name:"Sodium Hydroxide", formula:"NaOH", defaultColor:"#ab47bc",
-    data:[[0,42.0],[10,51.0],[20,109],[30,119],[40,129],[50,145],[60,174],[70,300],[80,330],[90,370],[100,347]] },
-  { id:"NH4NO3", name:"Ammonium Nitrate", formula:"NH\u2084NO\u2083", defaultColor:"#ef5350",
-    data:[[0,118],[10,150],[20,190],[30,242],[40,297],[50,344],[60,421],[70,499],[80,580],[90,740],[100,871]] },
-  { id:"sucrose", name:"Sucrose (Sugar)", formula:"C\u2081\u2082H\u2082\u2082O\u2081\u2081", defaultColor:"#ffa000",
-    data:[[0,179],[10,190],[20,204],[30,219],[40,238],[50,260],[60,287],[70,320],[80,362],[90,415],[100,487]] },
-  { id:"SO2", name:"Sulfur Dioxide", formula:"SO\u2082", defaultColor:"#78909c",
-    data:[[0,22.8],[10,16.2],[20,11.3],[30,7.8],[40,5.4],[50,3.7],[60,2.5],[70,1.6],[80,1.0],[90,0.6],[100,0.3]] },
-  { id:"AgNO3", name:"Silver Nitrate", formula:"AgNO\u2083", defaultColor:"#9e9e9e",
-    data:[[0,122],[10,167],[20,222],[30,300],[40,376],[50,455],[60,525],[70,608],[80,669],[90,723],[100,952]] },
-  { id:"MgSO4", name:"Magnesium Sulfate", formula:"MgSO\u2084", defaultColor:"#66bb6a",
-    data:[[0,26.9],[10,30.9],[20,33.7],[30,38.9],[40,44.5],[50,50.9],[60,54.6],[70,56.1],[80,55.8],[90,54.1],[100,50.4]] },
-  { id:"Na2SO4", name:"Sodium Sulfate", formula:"Na\u2082SO\u2084", defaultColor:"#42a5f5",
-    data:[[0,4.76],[10,9.1],[20,19.5],[30,40.8],[40,48.8],[50,46.7],[60,45.3],[70,44.1],[80,43.7],[90,42.7],[100,42.5]] },
-  { id:"K2Cr2O7", name:"Potassium Dichromate", formula:"K\u2082Cr\u2082O\u2087", defaultColor:"#e64a19",
-    data:[[0,4.7],[10,8.1],[20,12.3],[30,18.1],[40,26.3],[50,37.0],[60,45.6],[70,56.3],[80,70.2],[90,82.0],[100,102]] }
+// ─────────────────────────────────────────────────────────
+// SOLUBILITY DATA (all per 100 g H₂O at °C)
+// ─────────────────────────────────────────────────────────
+const BUILTIN_DATA = [
+  { id:"KNO3",     name:"Potassium Nitrate",    formula:"KNO\u2083",           defaultColor:"#e53935", data:[[0,13.3],[10,20.9],[20,31.6],[30,45.8],[40,63.9],[50,85.5],[60,110],[70,138],[80,169],[90,202],[100,246]] },
+  { id:"NaCl",     name:"Sodium Chloride",      formula:"NaCl",                defaultColor:"#1e88e5", data:[[0,35.7],[10,35.8],[20,36.0],[30,36.3],[40,36.6],[50,37.0],[60,37.3],[70,37.8],[80,38.4],[90,39.0],[100,39.8]] },
+  { id:"KCl",      name:"Potassium Chloride",   formula:"KCl",                 defaultColor:"#43a047", data:[[0,27.6],[10,31.0],[20,34.0],[30,37.0],[40,40.0],[50,42.6],[60,45.5],[70,48.3],[80,51.1],[90,54.0],[100,56.7]] },
+  { id:"NH4Cl",    name:"Ammonium Chloride",    formula:"NH\u2084Cl",           defaultColor:"#8e24aa", data:[[0,29.4],[10,33.3],[20,37.2],[30,41.4],[40,45.8],[50,50.4],[60,55.2],[70,60.2],[80,65.6],[90,71.3],[100,77.3]] },
+  { id:"KBr",      name:"Potassium Bromide",    formula:"KBr",                 defaultColor:"#f4511e", data:[[0,53.5],[10,59.5],[20,65.2],[30,70.6],[40,75.5],[50,80.2],[60,85.5],[70,90.0],[80,95.0],[90,99.2],[100,104]] },
+  { id:"NaNO3",    name:"Sodium Nitrate",       formula:"NaNO\u2083",           defaultColor:"#00acc1", data:[[0,73.0],[10,80.0],[20,87.6],[30,96.0],[40,104],[50,114],[60,124],[70,134],[80,148],[90,163],[100,180]] },
+  { id:"CuSO4",    name:"Copper(II) Sulfate",   formula:"CuSO\u2084",           defaultColor:"#039be5", data:[[0,14.3],[10,17.4],[20,20.7],[30,25.0],[40,28.5],[50,33.3],[60,40.0],[70,47.0],[80,55.0],[90,63.0],[100,75.4]] },
+  { id:"NaAc",     name:"Sodium Acetate",       formula:"NaC\u2082H\u2083O\u2082", defaultColor:"#6d4c41", data:[[0,36.2],[10,40.8],[20,46.5],[30,54.5],[40,65.5],[50,82.3],[60,139],[70,153],[80,170],[90,188],[100,208]] },
+  { id:"Ce2SO43",  name:"Cerium(III) Sulfate",  formula:"Ce\u2082(SO\u2084)\u2083", defaultColor:"#546e7a", data:[[0,21.4],[10,17.0],[20,10.1],[30,7.0],[40,5.0],[50,3.9],[60,3.3],[70,2.8],[80,2.4],[90,2.1],[100,1.8]] },
+  { id:"Li2SO4",   name:"Lithium Sulfate",      formula:"Li\u2082SO\u2084",      defaultColor:"#c0ca33", data:[[0,35.5],[10,35.0],[20,34.2],[30,33.4],[40,32.6],[50,31.9],[60,31.0],[70,30.1],[80,29.3],[90,28.4],[100,27.6]] },
+  { id:"KI",       name:"Potassium Iodide",     formula:"KI",                  defaultColor:"#ff7043", data:[[0,128],[10,136],[20,144],[30,152],[40,160],[50,168],[60,176],[70,184],[80,192],[90,200],[100,208]] },
+  { id:"CaOH2",    name:"Calcium Hydroxide",    formula:"Ca(OH)\u2082",          defaultColor:"#26a69a", data:[[0,0.189],[10,0.182],[20,0.173],[30,0.160],[40,0.141],[50,0.128],[60,0.116],[70,0.106],[80,0.094],[90,0.085],[100,0.077]] },
+  { id:"NaOH",     name:"Sodium Hydroxide",     formula:"NaOH",                defaultColor:"#ab47bc", data:[[0,42.0],[10,51.0],[20,109],[30,119],[40,129],[50,145],[60,174],[70,300],[80,330],[90,370],[100,347]] },
+  { id:"NH4NO3",   name:"Ammonium Nitrate",     formula:"NH\u2084NO\u2083",      defaultColor:"#ef5350", data:[[0,118],[10,150],[20,190],[30,242],[40,297],[50,344],[60,421],[70,499],[80,580],[90,740],[100,871]] },
+  { id:"sucrose",  name:"Sucrose (Sugar)",      formula:"C\u2081\u2082H\u2082\u2082O\u2081\u2081", defaultColor:"#ffa000", data:[[0,179],[10,190],[20,204],[30,219],[40,238],[50,260],[60,287],[70,320],[80,362],[90,415],[100,487]] },
+  { id:"SO2",      name:"Sulfur Dioxide",       formula:"SO\u2082",             defaultColor:"#78909c", data:[[0,22.8],[10,16.2],[20,11.3],[30,7.8],[40,5.4],[50,3.7],[60,2.5],[70,1.6],[80,1.0],[90,0.6],[100,0.3]] },
+  { id:"AgNO3",    name:"Silver Nitrate",       formula:"AgNO\u2083",           defaultColor:"#9e9e9e", data:[[0,122],[10,167],[20,222],[30,300],[40,376],[50,455],[60,525],[70,608],[80,669],[90,723],[100,952]] },
+  { id:"MgSO4",    name:"Magnesium Sulfate",    formula:"MgSO\u2084",           defaultColor:"#66bb6a", data:[[0,26.9],[10,30.9],[20,33.7],[30,38.9],[40,44.5],[50,50.9],[60,54.6],[70,56.1],[80,55.8],[90,54.1],[100,50.4]] },
+  { id:"Na2SO4",   name:"Sodium Sulfate",       formula:"Na\u2082SO\u2084",      defaultColor:"#42a5f5", data:[[0,4.76],[10,9.1],[20,19.5],[30,40.8],[40,48.8],[50,46.7],[60,45.3],[70,44.1],[80,43.7],[90,42.7],[100,42.5]] },
+  { id:"K2Cr2O7",  name:"Potassium Dichromate", formula:"K\u2082Cr\u2082O\u2087", defaultColor:"#e64a19", data:[[0,4.7],[10,8.1],[20,12.3],[30,18.1],[40,26.3],[50,37.0],[60,45.6],[70,56.3],[80,70.2],[90,82.0],[100,102]] }
 ];
 
-// ──────────────────────────────────────────
-// TEMPERATURE CONVERSIONS
-// ──────────────────────────────────────────
-function toDisplayTemp(tempC, scale) {
-  if (scale === 'F') return tempC * 9/5 + 32;
-  if (scale === 'K') return tempC + 273.15;
-  return tempC;
+function loadCustomCompounds() {
+  try { const s = localStorage.getItem('sc_custom_compounds'); return s ? JSON.parse(s) : []; } catch(e) { return []; }
 }
-function fromDisplayTemp(tempDisp, scale) {
-  if (scale === 'F') return (tempDisp - 32) * 5/9;
-  if (scale === 'K') return tempDisp - 273.15;
-  return tempDisp;
-}
-function tempUnit(scale) {
-  return scale === 'C' ? '°C' : scale === 'F' ? '°F' : 'K';
+function saveCustomCompounds(arr) {
+  try { localStorage.setItem('sc_custom_compounds', JSON.stringify(arr)); } catch(e) {}
 }
 
-// ──────────────────────────────────────────
-// CATMULL-ROM SPLINE INTERPOLATION
-// ──────────────────────────────────────────
-function catmullRomPoint(p0, p1, p2, p3, t) {
-  const t2 = t * t, t3 = t2 * t;
+let SOLUBILITY_DATA = [...BUILTIN_DATA, ...loadCustomCompounds()];
+
+// ─────────────────────────────────────────────────────────
+// TEMPERATURE CONVERSIONS
+// ─────────────────────────────────────────────────────────
+function toDisplayTemp(tC, scale) {
+  if (scale === 'F') return tC * 9/5 + 32;
+  if (scale === 'K') return tC + 273.15;
+  return tC;
+}
+function fromDisplayTemp(tD, scale) {
+  if (scale === 'F') return (tD - 32) * 5/9;
+  if (scale === 'K') return tD - 273.15;
+  return tD;
+}
+function tempUnit(scale) { return scale === 'C' ? '°C' : scale === 'F' ? '°F' : 'K'; }
+
+// ─────────────────────────────────────────────────────────
+// CATMULL-ROM SPLINE
+// ─────────────────────────────────────────────────────────
+function crPoint(p0, p1, p2, p3, t) {
+  const t2=t*t, t3=t2*t;
   return {
     x: 0.5*((2*p1.x)+(-p0.x+p2.x)*t+(2*p0.x-5*p1.x+4*p2.x-p3.x)*t2+(-p0.x+3*p1.x-3*p2.x+p3.x)*t3),
     y: 0.5*((2*p1.y)+(-p0.y+p2.y)*t+(2*p0.y-5*p1.y+4*p2.y-p3.y)*t2+(-p0.y+3*p1.y-3*p2.y+p3.y)*t3)
   };
 }
 
-function interpolateSolubility(compound, tempC) {
+// Linear interpolation of compound data (per 100g water, °C)
+function interpSol(compound, tC) {
   const pts = compound.data;
-  if (tempC <= pts[0][0]) return pts[0][1];
-  if (tempC >= pts[pts.length-1][0]) return pts[pts.length-1][1];
-  for (let i = 0; i < pts.length - 1; i++) {
-    if (tempC >= pts[i][0] && tempC <= pts[i+1][0]) {
-      const t = (tempC - pts[i][0]) / (pts[i+1][0] - pts[i][0]);
-      // simple linear for now; smooth curve is drawn via catmull-rom on canvas
-      return pts[i][1] + t * (pts[i+1][1] - pts[i][1]);
+  if (tC <= pts[0][0]) return pts[0][1];
+  if (tC >= pts[pts.length-1][0]) return pts[pts.length-1][1];
+  for (let i = 0; i < pts.length-1; i++) {
+    if (tC >= pts[i][0] && tC <= pts[i+1][0]) {
+      const f = (tC - pts[i][0]) / (pts[i+1][0] - pts[i][0]);
+      return pts[i][1] + f * (pts[i+1][1] - pts[i][1]);
     }
   }
   return null;
 }
 
-// ──────────────────────────────────────────
+// ─────────────────────────────────────────────────────────
 // MAIN CONTROLLER
-// ──────────────────────────────────────────
+// ─────────────────────────────────────────────────────────
 const SC = (() => {
   const canvas = document.getElementById('solubility-canvas');
   const ctx = canvas.getContext('2d');
   const LABELS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
 
-  // State
   let state = {
     selected: new Set(['KNO3','NaCl','KCl','NH4Cl','NaNO3','CuSO4']),
-    colors: {},       // override colors per compound
+    colors: {},
     monoColor: false,
     tempScale: 'C',
     waterAmount: 100,
     xMin: 0, xMax: 100,
     yMin: 0, yMax: 260,
     xTick: 10, yTick: 20,
-    zoom: 100,
-    fontSize: 12,
-    points: [],       // {xDisp, yScaled, showCoord, showDotted}
+    zoom: 100, fontSize: 12,
+    points: [],
     transparentBg: false,
   };
 
-  // Initialize compound colors
   SOLUBILITY_DATA.forEach(c => { state.colors[c.id] = c.defaultColor; });
 
-  // Layout constants (base, before zoom)
   const PAD = { left: 62, right: 40, top: 30, bottom: 56 };
 
-  function getBaseSize() {
-    return { w: 760, h: 520 };
+  function getSize() {
+    const z = state.zoom/100;
+    return { w: Math.round(760*z), h: Math.round(520*z) };
   }
+  function getDims() {
+    const z = state.zoom/100;
+    const pL=PAD.left*z, pT=PAD.top*z;
+    const pW=canvas.width-pL-PAD.right*z;
+    const pH=canvas.height-pT-PAD.bottom*z;
+    return { z, pL, pT, pW, pH };
+  }
+  // Convert display-temp → canvas x
+  function cxOf(tDisp, d) { return d.pL + (tDisp-state.xMin)/(state.xMax-state.xMin)*d.pW; }
+  // Convert scaled-sol (per waterAmount g water) → canvas y
+  function cyOf(solScaled, d) { return d.pT + (1-(solScaled-state.yMin*state.waterAmount/100)/((state.yMax-state.yMin)*state.waterAmount/100))*d.pH; }
 
-  function getScaledSize() {
-    const z = state.zoom / 100;
-    const b = getBaseSize();
-    return { w: Math.round(b.w * z), h: Math.round(b.h * z) };
-  }
-
-  function plotW() { return canvas.width - (PAD.left + PAD.right) * (state.zoom/100); }
-  function plotH() { return canvas.height - (PAD.top + PAD.bottom) * (state.zoom/100); }
-
-  function toCanvasX(dispTemp) {
-    const z = state.zoom / 100;
-    const padL = PAD.left * z;
-    return padL + (dispTemp - state.xMin) / (state.xMax - state.xMin) * plotW();
-  }
-  function toCanvasY(solVal) {
-    const z = state.zoom / 100;
-    const padT = PAD.top * z;
-    return padT + (1 - (solVal - state.yMin) / (state.yMax - state.yMin)) * plotH();
-  }
-  function fromCanvasX(cx) {
-    const z = state.zoom / 100;
-    const padL = PAD.left * z;
-    return state.xMin + (cx - padL) / plotW() * (state.xMax - state.xMin);
-  }
-  function fromCanvasY(cy) {
-    const z = state.zoom / 100;
-    const padT = PAD.top * z;
-    return state.yMin + (1 - (cy - padT) / plotH()) * (state.yMax - state.yMin);
-  }
-
-  // ── BUILD COMPOUND LIST UI ──
+  // ── BUILD COMPOUND LIST ──
   function buildCompoundList() {
     const list = document.getElementById('compound-list');
     list.innerHTML = '';
     SOLUBILITY_DATA.forEach(c => {
+      const isCustom = !BUILTIN_DATA.find(b => b.id === c.id);
       const row = document.createElement('div');
       row.className = 'compound-row' + (state.selected.has(c.id) ? ' selected' : '');
       row.innerHTML = `
-        <input type="checkbox" ${state.selected.has(c.id) ? 'checked' : ''} id="chk-${c.id}" />
-        <div class="compound-name">${c.name}</div>
+        <input type="checkbox" ${state.selected.has(c.id) ? 'checked' : ''} />
+        <div class="compound-name" title="${c.name}">${c.name}</div>
         <div class="compound-formula">${c.formula}</div>
-        <input type="color" class="compound-color-swatch" value="${state.colors[c.id]}" title="Line color" />
+        <input type="color" class="compound-color-swatch" value="${state.colors[c.id]||c.defaultColor}" title="Line color" />
+        ${isCustom ? '<button class="compound-delete-btn" title="Remove">×</button>' : ''}
       `;
       const chk = row.querySelector('input[type="checkbox"]');
       chk.addEventListener('change', () => {
         if (chk.checked) state.selected.add(c.id); else state.selected.delete(c.id);
         row.classList.toggle('selected', chk.checked);
-        updateSaCompoundList();
-        draw();
+        updateSaList(); draw();
       });
-      const colorInput = row.querySelector('input[type="color"]');
-      colorInput.addEventListener('input', () => { state.colors[c.id] = colorInput.value; draw(); });
-      colorInput.addEventListener('click', e => e.stopPropagation());
-      row.addEventListener('click', e => { if (e.target.tagName !== 'INPUT') chk.click(); });
+      const col = row.querySelector('input[type="color"]');
+      col.addEventListener('input', () => { state.colors[c.id] = col.value; draw(); });
+      col.addEventListener('click', e => e.stopPropagation());
+      if (isCustom) {
+        row.querySelector('.compound-delete-btn').addEventListener('click', e => {
+          e.stopPropagation(); removeCustom(c.id);
+        });
+      }
+      row.addEventListener('click', e => { if (e.target.tagName !== 'INPUT' && e.target.tagName !== 'BUTTON') chk.click(); });
       list.appendChild(row);
     });
   }
 
-  function updateSaCompoundList() {
+  function updateSaList() {
     const sel = document.getElementById('sa-compound');
     const prev = sel.value;
     sel.innerHTML = '<option value="">-- select compound --</option>';
     SOLUBILITY_DATA.filter(c => state.selected.has(c.id)).forEach(c => {
-      const opt = document.createElement('option');
-      opt.value = c.id;
-      opt.textContent = `${c.name} (${c.formula})`;
-      sel.appendChild(opt);
+      const o = document.createElement('option');
+      o.value = c.id; o.textContent = `${c.name} (${c.formula})`;
+      sel.appendChild(o);
     });
     sel.value = prev;
   }
 
   // ── DRAW ──
   function draw() {
-    const { w, h } = getScaledSize();
-    canvas.width = w;
-    canvas.height = h;
-    const z = state.zoom / 100;
-    const fs = state.fontSize * z;
+    const { w, h } = getSize();
+    canvas.width = w; canvas.height = h;
+    const d = getDims();
+    const fs = state.fontSize * d.z;
     ctx.clearRect(0, 0, w, h);
+    if (!state.transparentBg) { ctx.fillStyle = '#ffffff'; ctx.fillRect(0,0,w,h); }
 
-    // Background
-    if (!state.transparentBg) {
-      ctx.fillStyle = '#ffffff';
-      ctx.fillRect(0, 0, w, h);
+    // The y-axis is expressed in scaled units: yMin/yMax are per-100g values,
+    // but rendered labels show per-waterAmount values.
+    const yMinScaled = state.yMin * state.waterAmount / 100;
+    const yMaxScaled = state.yMax * state.waterAmount / 100;
+
+    function cxT(tDisp) { return d.pL + (tDisp-state.xMin)/(state.xMax-state.xMin)*d.pW; }
+    function cyS(solScaled) { return d.pT + (1-(solScaled-yMinScaled)/(yMaxScaled-yMinScaled))*d.pH; }
+
+    // Grid
+    ctx.strokeStyle = '#e0e0e0'; ctx.lineWidth = 0.5;
+    for (let x = state.xMin; x <= state.xMax+0.001; x += state.xTick) {
+      const cx = cxT(x);
+      ctx.beginPath(); ctx.moveTo(cx,d.pT); ctx.lineTo(cx,d.pT+d.pH); ctx.stroke();
+    }
+    // Y ticks are in per-100g units (yMin/yMax), labels show per-waterAmount
+    for (let y = state.yMin; y <= state.yMax+0.001; y += state.yTick) {
+      const cy = cyS(y * state.waterAmount/100);
+      ctx.beginPath(); ctx.moveTo(d.pL,cy); ctx.lineTo(d.pL+d.pW,cy); ctx.stroke();
     }
 
-    const padL = PAD.left * z, padT = PAD.top * z, padR = PAD.right * z, padB = PAD.bottom * z;
-    const pW = w - padL - padR, pH = h - padT - padB;
-
-    // Grid + axes
-    ctx.strokeStyle = '#e0e0e0';
-    ctx.lineWidth = 0.5;
-
-    // Vertical grid lines
-    for (let x = state.xMin; x <= state.xMax; x += state.xTick) {
-      const cx = padL + (x - state.xMin) / (state.xMax - state.xMin) * pW;
-      ctx.beginPath(); ctx.moveTo(cx, padT); ctx.lineTo(cx, padT + pH); ctx.stroke();
-    }
-    // Horizontal grid lines
-    for (let y = state.yMin; y <= state.yMax; y += state.yTick) {
-      const cy = padT + (1 - (y - state.yMin) / (state.yMax - state.yMin)) * pH;
-      ctx.beginPath(); ctx.moveTo(padL, cy); ctx.lineTo(padL + pW, cy); ctx.stroke();
-    }
-
-    // Axes border
-    ctx.strokeStyle = '#333';
-    ctx.lineWidth = 1.5 * z;
-    ctx.strokeRect(padL, padT, pW, pH);
+    // Axis border
+    ctx.strokeStyle = '#333'; ctx.lineWidth = 1.5*d.z;
+    ctx.strokeRect(d.pL, d.pT, d.pW, d.pH);
 
     // X axis labels
-    ctx.fillStyle = '#222';
-    ctx.textAlign = 'center';
-    ctx.textBaseline = 'top';
+    ctx.fillStyle='#222'; ctx.textAlign='center'; ctx.textBaseline='top';
     ctx.font = `${fs}px 'Segoe UI', sans-serif`;
-    for (let x = state.xMin; x <= state.xMax; x += state.xTick) {
-      const cx = padL + (x - state.xMin) / (state.xMax - state.xMin) * pW;
-      ctx.fillText(String(Math.round(x * 10)/10), cx, padT + pH + 6*z);
-    }
-    // X axis title
+    for (let x = state.xMin; x <= state.xMax+0.001; x += state.xTick)
+      ctx.fillText(String(Math.round(x*10)/10), cxT(x), d.pT+d.pH+6*d.z);
     ctx.font = `bold ${fs*1.1}px 'Segoe UI', sans-serif`;
-    ctx.fillText(`Temperature (${tempUnit(state.tempScale)})`, padL + pW/2, padT + pH + 26*z);
+    ctx.fillText(`Temperature (${tempUnit(state.tempScale)})`, d.pL+d.pW/2, d.pT+d.pH+26*d.z);
 
-    // Y axis labels
-    ctx.textAlign = 'right';
-    ctx.textBaseline = 'middle';
+    // Y axis labels (show scaled values: per waterAmount g)
+    ctx.textAlign='right'; ctx.textBaseline='middle';
     ctx.font = `${fs}px 'Segoe UI', sans-serif`;
-    for (let y = state.yMin; y <= state.yMax; y += state.yTick) {
-      const cy = padT + (1 - (y - state.yMin) / (state.yMax - state.yMin)) * pH;
-      const label = (y * state.waterAmount / 100 % 1 === 0)
-        ? Math.round(y * state.waterAmount / 100)
-        : (y * state.waterAmount / 100).toFixed(1);
-      ctx.fillText(String(label), padL - 6*z, cy);
+    for (let y = state.yMin; y <= state.yMax+0.001; y += state.yTick) {
+      const scaledVal = y * state.waterAmount / 100;
+      const cy = cyS(scaledVal);
+      const lbl = scaledVal%1===0 ? Math.round(scaledVal) : scaledVal.toFixed(1);
+      ctx.fillText(String(lbl), d.pL-6*d.z, cy);
     }
-    // Y axis title
     ctx.save();
-    ctx.translate(12*z, padT + pH/2);
+    ctx.translate(12*d.z, d.pT+d.pH/2);
     ctx.rotate(-Math.PI/2);
-    ctx.textAlign = 'center';
-    ctx.textBaseline = 'middle';
+    ctx.textAlign='center'; ctx.textBaseline='middle';
     ctx.font = `bold ${fs*1.1}px 'Segoe UI', sans-serif`;
-    ctx.fillText(`Solubility (g / ${state.waterAmount} g H₂O)`, 0, 0);
+    ctx.fillText(`Solubility (g / ${state.waterAmount} g H\u2082O)`, 0, 0);
     ctx.restore();
 
-    // Draw curves
+    // Draw curves and collect label candidates
+    const labelCandidates = [];
     const monoColor = state.monoColor;
+
     SOLUBILITY_DATA.forEach(compound => {
       if (!state.selected.has(compound.id)) return;
-      const color = monoColor ? '#000000' : state.colors[compound.id];
-      ctx.strokeStyle = color;
-      ctx.lineWidth = 2 * z;
-      ctx.lineJoin = 'round';
+      const color = monoColor ? '#000000' : (state.colors[compound.id] || compound.defaultColor);
 
-      // Build canvas points from data
-      const pts = compound.data.map(([tempC, sol]) => {
-        const dispTemp = toDisplayTemp(tempC, state.tempScale);
+      // Canvas-space control points
+      const pts = compound.data.map(([tC, sol]) => {
+        const dispT = toDisplayTemp(tC, state.tempScale);
         const scaledSol = sol * state.waterAmount / 100;
-        return { x: padL + (dispTemp - state.xMin)/(state.xMax - state.xMin)*pW,
-                 y: padT + (1 - (scaledSol - state.yMin)/(state.yMax - state.yMin))*pH };
+        return { x: cxT(dispT), y: cyS(scaledSol) };
       });
 
-      // Filter to points visible in x range
-      const dispMin = toDisplayTemp(compound.data[0][0], state.tempScale);
-      const dispMax = toDisplayTemp(compound.data[compound.data.length-1][0], state.tempScale);
-
-      // Draw catmull-rom curve
+      // Catmull-Rom curve
+      ctx.strokeStyle = color; ctx.lineWidth = 2*d.z; ctx.lineJoin = 'round';
       ctx.beginPath();
       let started = false;
-      const steps = 200;
-      for (let s = 0; s <= steps; s++) {
-        const t = s / steps;
-        const idx = t * (pts.length - 1);
+      for (let s = 0; s <= 200; s++) {
+        const t = s/200;
+        const idx = t*(pts.length-1);
         const i = Math.floor(idx);
-        const lt = idx - i;
-        const i0 = Math.max(0, i-1), i1 = i, i2 = Math.min(pts.length-1, i+1), i3 = Math.min(pts.length-1, i+2);
-        const pt = catmullRomPoint(pts[i0], pts[i1], pts[i2], pts[i3], lt);
-        // Clip to axis bounds
-        if (pt.x < padL || pt.x > padL+pW || pt.y < padT || pt.y > padT+pH) { started = false; continue; }
-        if (!started) { ctx.moveTo(pt.x, pt.y); started = true; }
-        else ctx.lineTo(pt.x, pt.y);
+        const lt = idx-i;
+        const i0=Math.max(0,i-1), i1=i, i2=Math.min(pts.length-1,i+1), i3=Math.min(pts.length-1,i+2);
+        const pt = crPoint(pts[i0],pts[i1],pts[i2],pts[i3],lt);
+        if (pt.x < d.pL-1 || pt.x > d.pL+d.pW+1 || pt.y < d.pT-1 || pt.y > d.pT+d.pH+1) { started=false; continue; }
+        if (!started) { ctx.moveTo(pt.x,pt.y); started=true; } else ctx.lineTo(pt.x,pt.y);
       }
       ctx.stroke();
 
-      // Label on line — find a spot near x=65% of visible range
-      const labelTempC_target = compound.data[Math.floor(compound.data.length * 0.65)][0];
-      const labelDispTemp = toDisplayTemp(labelTempC_target, state.tempScale);
-      if (labelDispTemp >= state.xMin && labelDispTemp <= state.xMax) {
-        const labelSol = interpolateSolubility(compound, labelTempC_target) * state.waterAmount / 100;
-        if (labelSol >= state.yMin && labelSol <= state.yMax) {
-          const lx = padL + (labelDispTemp - state.xMin)/(state.xMax - state.xMin)*pW;
-          const ly = padT + (1 - (labelSol - state.yMin)/(state.yMax - state.yMin))*pH;
-          ctx.font = `bold ${fs*0.95}px 'Segoe UI', sans-serif`;
-          ctx.textAlign = 'left';
-          ctx.textBaseline = 'bottom';
-          ctx.fillStyle = color;
-          // White halo for legibility
-          ctx.strokeStyle = 'rgba(255,255,255,0.85)';
-          ctx.lineWidth = 3*z;
-          ctx.strokeText(compound.formula, lx + 3*z, ly - 3*z);
-          ctx.fillText(compound.formula, lx + 3*z, ly - 3*z);
+      // Find best visible label position
+      for (const frac of [0.65, 0.55, 0.75, 0.45, 0.85, 0.35, 0.90, 0.25]) {
+        const tIdx = Math.min(Math.floor(frac*(compound.data.length-1)), compound.data.length-2);
+        const tC = compound.data[tIdx][0];
+        const sol = interpSol(compound, tC) * state.waterAmount / 100;
+        const dispT = toDisplayTemp(tC, state.tempScale);
+        const lx = cxT(dispT), ly = cyS(sol);
+        if (lx >= d.pL+8 && lx <= d.pL+d.pW-35 && ly >= d.pT+10 && ly <= d.pT+d.pH-10) {
+          labelCandidates.push({ lx, ly, text: compound.formula, color });
+          break;
         }
       }
     });
 
+    // Collision-avoidant label placement
+    drawCurveLabels(labelCandidates, fs, d);
+
     // Draw user points
     state.points.forEach((pt, i) => {
-      const cx = padL + (pt.xDisp - state.xMin)/(state.xMax - state.xMin)*pW;
-      const cy = padT + (1 - (pt.yScaled - state.yMin)/(state.yMax - state.yMin))*pH;
-      if (cx < padL || cx > padL+pW || cy < padT || cy > padT+pH) return;
+      const cx = cxT(pt.xDisp);
+      const cy = cyS(pt.yScaled);
+      if (cx < d.pL || cx > d.pL+d.pW || cy < d.pT || cy > d.pT+d.pH) return;
 
-      // Dotted projection lines
       if (pt.showDotted) {
-        ctx.setLineDash([4*z, 3*z]);
-        ctx.strokeStyle = '#555';
-        ctx.lineWidth = 1*z;
-        ctx.beginPath(); ctx.moveTo(cx, cy); ctx.lineTo(padL, cy); ctx.stroke();
-        ctx.beginPath(); ctx.moveTo(cx, cy); ctx.lineTo(cx, padT+pH); ctx.stroke();
+        ctx.setLineDash([4*d.z,3*d.z]);
+        ctx.strokeStyle = pt.lineColor||'#555555';
+        ctx.lineWidth = (pt.lineThick||1)*d.z;
+        ctx.beginPath(); ctx.moveTo(cx,cy); ctx.lineTo(d.pL,cy); ctx.stroke();
+        ctx.beginPath(); ctx.moveTo(cx,cy); ctx.lineTo(cx,d.pT+d.pH); ctx.stroke();
         ctx.setLineDash([]);
       }
 
       // Dot
-      ctx.beginPath();
-      ctx.arc(cx, cy, 5*z, 0, Math.PI*2);
-      ctx.fillStyle = '#e94560';
-      ctx.fill();
-      ctx.strokeStyle = '#fff';
-      ctx.lineWidth = 1.5*z;
-      ctx.stroke();
+      ctx.beginPath(); ctx.arc(cx,cy,5*d.z,0,Math.PI*2);
+      ctx.fillStyle = pt.dotColor||'#e94560'; ctx.fill();
+      ctx.strokeStyle='#fff'; ctx.lineWidth=1.5*d.z; ctx.stroke();
 
-      // Letter label
-      const letter = LABELS[i % LABELS.length];
+      // Letter
+      const letter = LABELS[i%LABELS.length];
       ctx.font = `bold ${fs*1.1}px 'Segoe UI', sans-serif`;
-      ctx.textBaseline = 'bottom';
-      ctx.textAlign = 'center';
-      ctx.fillStyle = '#222';
-      ctx.strokeStyle = 'rgba(255,255,255,0.9)';
-      ctx.lineWidth = 3*z;
-      ctx.strokeText(letter, cx, cy - 7*z);
-      ctx.fillText(letter, cx, cy - 7*z);
+      ctx.textBaseline='bottom'; ctx.textAlign='center';
+      ctx.strokeStyle='rgba(255,255,255,0.9)'; ctx.lineWidth=3*d.z;
+      ctx.strokeText(letter, cx, cy-7*d.z);
+      ctx.fillStyle='#222'; ctx.fillText(letter, cx, cy-7*d.z);
 
-      // Ordered pair label
+      // Coord label
       if (pt.showCoord) {
-        const xLabel = Math.round(pt.xDisp * 10)/10;
-        const yLabel = Math.round(pt.yScaled * 10)/10;
-        const coordText = `(${xLabel}${tempUnit(state.tempScale)}, ${yLabel}g)`;
-        ctx.font = `${fs*0.88}px 'Segoe UI', sans-serif`;
-        ctx.textAlign = 'left';
-        ctx.textBaseline = 'top';
-        ctx.strokeStyle = 'rgba(255,255,255,0.9)';
-        ctx.lineWidth = 3*z;
-        ctx.strokeText(coordText, cx + 7*z, cy - 4*z);
-        ctx.fillStyle = '#333';
-        ctx.fillText(coordText, cx + 7*z, cy - 4*z);
+        const coordText = `(${Math.round(pt.xDisp*10)/10}${tempUnit(state.tempScale)}, ${Math.round(pt.yScaled*10)/10}g)`;
+        ctx.font=`${fs*0.88}px 'Segoe UI', sans-serif`;
+        ctx.textAlign='left'; ctx.textBaseline='top';
+        ctx.strokeStyle='rgba(255,255,255,0.9)'; ctx.lineWidth=3*d.z;
+        ctx.strokeText(coordText, cx+7*d.z, cy-4*d.z);
+        ctx.fillStyle='#333'; ctx.fillText(coordText, cx+7*d.z, cy-4*d.z);
+      }
+
+      // On-graph analysis card
+      if (pt.analysisData && pt.showAnalysisOnGraph) {
+        drawAnalysisCard(pt, cx, cy, d, fs, cxT, cyS);
       }
     });
   }
 
-  // ── POINTS MANAGEMENT ──
+  // ── COLLISION-AVOIDANT CURVE LABELS ──
+  function drawCurveLabels(candidates, fs, d) {
+    const placed = [];
+    const pad = 3 * d.z;
+    candidates.forEach(({ lx, ly, text, color }) => {
+      ctx.font = `bold ${fs*0.95}px 'Segoe UI', sans-serif`;
+      const tw = ctx.measureText(text).width;
+      const th = fs * 0.95;
+      const offsets = [
+        { ox: 4*d.z, oy: -th-4*d.z },
+        { ox: 4*d.z, oy: 4*d.z },
+        { ox: -tw-8*d.z, oy: -th-4*d.z },
+        { ox: -tw-8*d.z, oy: 4*d.z },
+        { ox: 4*d.z, oy: -th/2 },
+        { ox: -tw-8*d.z, oy: -th/2 },
+        { ox: -tw/2, oy: -th-8*d.z },
+        { ox: -tw/2, oy: 6*d.z },
+      ];
+      let best = null;
+      for (const off of offsets) {
+        const rx=lx+off.ox-pad, ry=ly+off.oy-pad, rw=tw+pad*2, rh=th+pad*2;
+        if (rx<d.pL || rx+rw>d.pL+d.pW || ry<d.pT || ry+rh>d.pT+d.pH) continue;
+        if (!placed.some(p => rx<p.x+p.w && rx+rw>p.x && ry<p.y+p.h && ry+rh>p.y)) {
+          best = { tx:lx+off.ox, ty:ly+off.oy, rx, ry, rw, rh }; break;
+        }
+      }
+      if (!best) {
+        const off=offsets[0];
+        best = { tx:lx+off.ox, ty:ly+off.oy, rx:lx+off.ox-pad, ry:ly+off.oy-pad, rw:tw+pad*2, rh:th+pad*2 };
+      }
+      placed.push({ x:best.rx, y:best.ry, w:best.rw, h:best.rh });
+      ctx.font = `bold ${fs*0.95}px 'Segoe UI', sans-serif`;
+      ctx.textAlign='left'; ctx.textBaseline='top';
+      ctx.strokeStyle='rgba(255,255,255,0.9)'; ctx.lineWidth=3.5*d.z;
+      ctx.strokeText(text, best.tx, best.ty);
+      ctx.fillStyle=color; ctx.fillText(text, best.tx, best.ty);
+    });
+  }
+
+  // ── ON-GRAPH ANALYSIS CARD ──
+  function drawAnalysisCard(pt, cx, cy, d, fs, cxT, cyS) {
+    const ad = pt.analysisData;
+    const lines = [ad.type, `Limit: ${ad.satLimit}g`, ad.detail1, ad.detail2].filter(Boolean);
+    const pad = 8*d.z;
+    const lh = fs*0.9 + 3*d.z;
+    ctx.font = `${fs*0.85}px 'Segoe UI', sans-serif`;
+    const maxW = Math.max(...lines.map(l => ctx.measureText(l).width));
+    const bw = maxW + pad*2, bh = lh*lines.length + pad*2;
+    let bx = cx+14*d.z, by = cy-bh/2;
+    if (bx+bw > d.pL+d.pW-4) bx = cx-bw-14*d.z;
+    if (by < d.pT+4) by = d.pT+4;
+    if (by+bh > d.pT+d.pH-4) by = d.pT+d.pH-bh-4;
+    const typeColor = ad.type==='Unsaturated' ? '#4caf50' : ad.type==='Saturated' ? '#ffc107' : '#ef5350';
+    ctx.fillStyle='rgba(15,52,96,0.93)';
+    ctx.beginPath(); ctx.roundRect(bx,by,bw,bh,5*d.z); ctx.fill();
+    ctx.strokeStyle=typeColor; ctx.lineWidth=1.5*d.z; ctx.stroke();
+    let ty = by+pad;
+    lines.forEach((line,i) => {
+      ctx.font = i===0 ? `bold ${fs*0.9}px 'Segoe UI', sans-serif` : `${fs*0.82}px 'Segoe UI', sans-serif`;
+      ctx.fillStyle = i===0 ? typeColor : '#e0e0e0';
+      ctx.textAlign='left'; ctx.textBaseline='top';
+      ctx.fillText(line, bx+pad, ty); ty+=lh;
+    });
+    ctx.strokeStyle='rgba(200,200,200,0.35)'; ctx.lineWidth=0.8*d.z;
+    ctx.setLineDash([3*d.z,2*d.z]);
+    ctx.beginPath(); ctx.moveTo(cx,cy); ctx.lineTo(bx+(bx>cx?0:bw), by+bh/2); ctx.stroke();
+    ctx.setLineDash([]);
+  }
+
+  // ── POINT MANAGEMENT ──
   function rebuildPointsList() {
     const list = document.getElementById('points-list');
     list.innerHTML = '';
     state.points.forEach((pt, i) => {
-      const row = document.createElement('div');
-      row.className = 'point-row';
-      const letter = LABELS[i % LABELS.length];
-      const xRound = Math.round(pt.xDisp * 10)/10;
-      const yRound = Math.round(pt.yScaled * 10)/10;
-      row.innerHTML = `
-        <div class="point-label-badge">${letter}</div>
-        <div class="point-coords">${xRound}${tempUnit(state.tempScale)}, ${yRound}g</div>
-        <label class="toggle-label" style="font-size:10px;gap:3px;">
-          <input type="checkbox" ${pt.showDotted ? 'checked' : ''} title="Dotted lines" /> ···
-        </label>
-        <label class="toggle-label" style="font-size:10px;gap:3px;">
-          <input type="checkbox" ${pt.showCoord ? 'checked' : ''} title="Show coords" /> (x,y)
-        </label>
-        <button class="point-delete" title="Remove">×</button>
+      const letter = LABELS[i%LABELS.length];
+      const xR = Math.round(pt.xDisp*10)/10, yR = Math.round(pt.yScaled*10)/10;
+      const card = document.createElement('div');
+      card.className = 'point-card';
+      card.innerHTML = `
+        <div class="point-card-header">
+          <div class="point-label-badge">${letter}</div>
+          <div class="point-coords">${xR}${tempUnit(state.tempScale)}, ${yR}g</div>
+          <button class="point-delete" title="Remove">×</button>
+        </div>
+        <div class="point-toggles">
+          <label class="point-toggle"><input type="checkbox" class="pt-dotted" ${pt.showDotted?'checked':''} /> Show projection lines</label>
+          <label class="point-toggle"><input type="checkbox" class="pt-coord" ${pt.showCoord?'checked':''} /> Show ordered pair label</label>
+          ${pt.analysisData ? `<label class="point-toggle"><input type="checkbox" class="pt-analysis" ${pt.showAnalysisOnGraph?'checked':''} /> Show analysis card on graph</label>` : ''}
+        </div>
+        <div class="point-color-row">
+          <label>Dot</label>
+          <input type="color" class="pt-dot-color point-color-swatch" value="${pt.dotColor||'#e94560'}" />
+          <label style="margin-left:5px;">Line</label>
+          <input type="color" class="pt-line-color point-color-swatch" value="${pt.lineColor||'#555555'}" />
+        </div>
+        <div class="point-thick-row">
+          <label>Line thickness</label>
+          <input type="range" class="pt-thick-r" min="0.5" max="4" step="0.5" value="${pt.lineThick||1}" />
+          <input type="number" class="pt-thick-n" min="0.5" max="4" step="0.5" value="${pt.lineThick||1}" style="width:50px;" />
+        </div>
       `;
-      const checks = row.querySelectorAll('input[type="checkbox"]');
-      checks[0].addEventListener('change', () => { pt.showDotted = checks[0].checked; draw(); });
-      checks[1].addEventListener('change', () => { pt.showCoord = checks[1].checked; draw(); });
-      row.querySelector('.point-delete').addEventListener('click', () => {
-        state.points.splice(i, 1);
-        rebuildPointsList();
-        draw();
-      });
-      list.appendChild(row);
+      card.querySelector('.point-delete').onclick = () => { state.points.splice(i,1); rebuildPointsList(); draw(); };
+      card.querySelector('.pt-dotted').onchange = e => { pt.showDotted = e.target.checked; draw(); };
+      card.querySelector('.pt-coord').onchange = e => { pt.showCoord = e.target.checked; draw(); };
+      const ac = card.querySelector('.pt-analysis');
+      if (ac) ac.onchange = e => { pt.showAnalysisOnGraph = e.target.checked; draw(); };
+      card.querySelector('.pt-dot-color').oninput = e => { pt.dotColor = e.target.value; draw(); };
+      card.querySelector('.pt-line-color').oninput = e => { pt.lineColor = e.target.value; draw(); };
+      const tr = card.querySelector('.pt-thick-r'), tn = card.querySelector('.pt-thick-n');
+      tr.oninput = () => { tn.value=tr.value; pt.lineThick=parseFloat(tr.value); draw(); };
+      tn.onchange = () => { tr.value=tn.value; pt.lineThick=parseFloat(tn.value); draw(); };
+      list.appendChild(card);
     });
   }
 
-  function addPointManual() {
-    const xRaw = parseFloat(document.getElementById('pt-x').value);
-    const yRaw = parseFloat(document.getElementById('pt-y').value);
-    if (isNaN(xRaw) || isNaN(yRaw)) { showAlert('Enter valid temperature and solubility values.'); return; }
-    const showCoord = document.getElementById('show-coord-label').checked;
-    const showDotted = document.getElementById('show-dotted-lines').checked;
-    state.points.push({ xDisp: xRaw, yScaled: yRaw, showCoord, showDotted });
-    rebuildPointsList();
-    draw();
+  function defaultProps() {
+    return {
+      showCoord: document.getElementById('show-coord-label').checked,
+      showDotted: document.getElementById('show-dotted-lines').checked,
+      dotColor: document.getElementById('default-dot-color').value,
+      lineColor: document.getElementById('default-line-color').value,
+      lineThick: parseFloat(document.getElementById('default-line-thick-num').value)||1,
+    };
   }
 
-  // Canvas click → add point
+  function addPointManual() {
+    const x = parseFloat(document.getElementById('pt-x').value);
+    const y = parseFloat(document.getElementById('pt-y').value);
+    if (isNaN(x)||isNaN(y)) { showAlert('Enter valid temperature and solubility values.'); return; }
+    state.points.push({ xDisp:x, yScaled:y, ...defaultProps() });
+    rebuildPointsList(); draw();
+  }
+
   function onCanvasClick(e) {
     const rect = canvas.getBoundingClientRect();
-    const scaleX = canvas.width / rect.width;
-    const scaleY = canvas.height / rect.height;
-    const cx = (e.clientX - rect.left) * scaleX;
-    const cy = (e.clientY - rect.top) * scaleY;
-    const z = state.zoom / 100;
-    const padL = PAD.left*z, padT = PAD.top*z, padR = PAD.right*z, padB = PAD.bottom*z;
-    const pW = canvas.width - padL - padR;
-    const pH = canvas.height - padT - padB;
-    if (cx < padL || cx > padL+pW || cy < padT || cy > padT+pH) return;
-    const xDisp = state.xMin + (cx - padL)/pW * (state.xMax - state.xMin);
-    const yScaled = state.yMin + (1 - (cy - padT)/pH) * (state.yMax - state.yMin);
-    const showCoord = document.getElementById('show-coord-label').checked;
-    const showDotted = document.getElementById('show-dotted-lines').checked;
-    state.points.push({ xDisp: Math.round(xDisp*10)/10, yScaled: Math.round(yScaled*10)/10, showCoord, showDotted });
-    rebuildPointsList();
-    draw();
+    const sx = canvas.width/rect.width, sy = canvas.height/rect.height;
+    const cx=(e.clientX-rect.left)*sx, cy=(e.clientY-rect.top)*sy;
+    const d = getDims();
+    if (cx<d.pL||cx>d.pL+d.pW||cy<d.pT||cy>d.pT+d.pH) return;
+    const yMinScaled = state.yMin*state.waterAmount/100;
+    const yMaxScaled = state.yMax*state.waterAmount/100;
+    const xD = state.xMin + (cx-d.pL)/d.pW*(state.xMax-state.xMin);
+    const yS = yMinScaled + (1-(cy-d.pT)/d.pH)*(yMaxScaled-yMinScaled);
+    state.points.push({ xDisp:Math.round(xD*10)/10, yScaled:Math.round(yS*10)/10, ...defaultProps() });
+    rebuildPointsList(); draw();
   }
 
   // ── SATURATION ANALYSIS ──
   function analyzeSaturation() {
     const tempDisp = parseFloat(document.getElementById('sa-temp').value);
-    const solAmt = parseFloat(document.getElementById('sa-sol').value);
-    const compoundId = document.getElementById('sa-compound').value;
-    const resultDiv = document.getElementById('analysis-result');
-
-    if (isNaN(tempDisp) || isNaN(solAmt) || !compoundId) {
-      resultDiv.innerHTML = '<div class="analysis-card" style="color:var(--red)">Please fill in all three fields.</div>';
+    const solAmt   = parseFloat(document.getElementById('sa-sol').value);
+    const cid      = document.getElementById('sa-compound').value;
+    const resultDiv= document.getElementById('analysis-result');
+    if (isNaN(tempDisp)||isNaN(solAmt)||!cid) {
+      resultDiv.innerHTML = '<div class="analysis-card" style="color:var(--red)">Fill in all three fields.</div>';
       return;
     }
-
-    const compound = SOLUBILITY_DATA.find(c => c.id === compoundId);
+    const compound = SOLUBILITY_DATA.find(c => c.id===cid);
     if (!compound) return;
 
     const tempC = fromDisplayTemp(tempDisp, state.tempScale);
-    // Convert user solAmt (per waterAmount) back to per 100g basis
-    const solPer100 = solAmt * 100 / state.waterAmount;
-    const satSolPer100 = interpolateSolubility(compound, tempC);
-    const satSolScaled = satSolPer100 * state.waterAmount / 100;
+    // Database: per 100g water. User input: per waterAmount g water.
+    const solPer100 = solAmt * 100 / state.waterAmount;      // convert to per-100g basis
+    const satPer100 = interpSol(compound, tempC);             // sat limit per 100g
+    const satScaled = satPer100 * state.waterAmount / 100;    // sat limit per waterAmount g
 
-    let type, typeClass, detail = '';
+    let type, detail1='', detail2='';
+    const diff = solAmt - satScaled;
 
-    if (Math.abs(solAmt - satSolScaled) < 0.5) {
+    if (Math.abs(diff) <= 0.5) {
       type = 'Saturated';
-      typeClass = 'sat-saturated';
-      detail = `<div>The solution is exactly at the saturation point for ${compound.formula} at ${tempDisp}${tempUnit(state.tempScale)}.</div>`;
-    } else if (solAmt < satSolScaled) {
+      detail1 = `Exactly at the saturation point at ${tempDisp}${tempUnit(state.tempScale)}.`;
+    } else if (diff < 0) {
       type = 'Unsaturated';
-      typeClass = 'sat-unsaturated';
-      const deficit = satSolScaled - solAmt;
-      // Find temp where saturation = solAmt (heating or cooling to reach saturation)
-      // Since unsaturated: how much do we need to cool to reach saturation?
-      let tSat = findTempForSolubility(compound, solPer100, tempC, 'cool');
-      let tSuper = findTempForSolubility(compound, solPer100, tempC, 'cool');
-      const tSatDisp = tSat !== null ? Math.round(toDisplayTemp(tSat, state.tempScale)*10)/10 : null;
-      const deltaToSat = tSatDisp !== null ? Math.abs(tempDisp - tSatDisp).toFixed(1) : null;
-      detail = `<div style="margin-bottom:3px;">Currently <b>${solAmt}g</b> dissolved; max at this temp is <b>${satSolScaled.toFixed(1)}g</b>.</div>`;
-      if (deltaToSat !== null) {
-        detail += `<div>Cool by <b>~${deltaToSat}${tempUnit(state.tempScale)}</b> (to ${tSatDisp}${tempUnit(state.tempScale)}) to reach saturation.</div>`;
+      detail1 = `${Math.abs(diff).toFixed(1)}g below saturation limit.`;
+      // Find temp where sol = solPer100 (per 100g). For most compounds, cool to saturate.
+      const tSatC = findTempForTarget(compound, solPer100, tempC);
+      if (tSatC !== null) {
+        const tSatDisp = toDisplayTemp(tSatC, state.tempScale);
+        detail2 = `Cool ~${Math.abs(tempDisp-tSatDisp).toFixed(1)}${tempUnit(state.tempScale)} to reach saturation (${Math.round(tSatDisp*10)/10}${tempUnit(state.tempScale)}).`;
       }
-      detail += `<div style="margin-top:3px;">Supersaturation requires cooling below that point.</div>`;
     } else {
       type = 'Supersaturated';
-      typeClass = 'sat-supersaturated';
-      const excess = solAmt - satSolScaled;
-      detail = `<div style="margin-bottom:3px;"><b>${excess.toFixed(1)}g</b> more dissolved than the saturation limit at ${tempDisp}${tempUnit(state.tempScale)}.</div>`;
-      detail += `<div>No temperature change required — already supersaturated.</div>`;
+      detail1 = `${diff.toFixed(1)}g above saturation limit.`;
+      detail2 = 'No temperature change required.';
     }
 
+    const typeClass = type==='Unsaturated' ? 'sat-unsaturated' : type==='Saturated' ? 'sat-saturated' : 'sat-supersaturated';
     resultDiv.innerHTML = `
       <div class="analysis-card">
         <div class="sat-type ${typeClass}">${type}</div>
-        ${detail}
+        <div class="sat-row"><span>Sat. limit at ${tempDisp}${tempUnit(state.tempScale)}:</span><b>${satScaled.toFixed(1)}g / ${state.waterAmount}g H₂O</b></div>
+        <div class="sat-row"><span>Amount dissolved:</span><b>${solAmt}g</b></div>
+        ${detail1 ? `<div style="margin-top:5px;color:var(--text-dim)">${detail1}</div>` : ''}
+        ${detail2 ? `<div style="color:var(--text-dim)">${detail2}</div>` : ''}
       </div>`;
+
+    if (document.getElementById('sa-plot-point').checked) {
+      const showCard = document.getElementById('sa-show-on-graph').checked;
+      const ad = { type, satLimit: satScaled.toFixed(1), detail1, detail2 };
+      state.points.push({
+        xDisp: tempDisp, yScaled: Math.round(solAmt*10)/10,
+        ...defaultProps(), showAnalysisOnGraph: showCard, analysisData: ad
+      });
+      rebuildPointsList(); draw();
+    }
   }
 
-  function findTempForSolubility(compound, targetPer100, startTempC, direction) {
-    // Scan temperature range to find where solubility ≈ targetPer100
-    const step = direction === 'cool' ? -0.5 : 0.5;
-    const limit = direction === 'cool' ? compound.data[0][0] : compound.data[compound.data.length-1][0];
-    let t = startTempC + step;
-    while ((direction === 'cool' && t >= limit) || (direction === 'heat' && t <= limit)) {
-      const s = interpolateSolubility(compound, t);
-      if (Math.abs(s - targetPer100) < 0.8) return t;
-      if ((direction === 'cool' && s < targetPer100) || (direction === 'heat' && s > targetPer100)) return t;
-      t += step;
+  function findTempForTarget(compound, targetPer100, startTempC) {
+    // Walk downward from startTempC (cool) — works for increasing solubility curves
+    for (let t = startTempC; t >= compound.data[0][0]; t -= 0.5) {
+      if (interpSol(compound,t) <= targetPer100) return t;
+    }
+    // Walk upward — works for decreasing curves (e.g. Ce2(SO4)3)
+    for (let t = startTempC; t <= compound.data[compound.data.length-1][0]; t += 0.5) {
+      if (interpSol(compound,t) <= targetPer100) return t;
     }
     return null;
   }
@@ -930,137 +903,152 @@ const SC = (() => {
     list.innerHTML = '';
     const active = SOLUBILITY_DATA.filter(c => state.selected.has(c.id));
     const found = [];
-
-    for (let i = 0; i < active.length; i++) {
-      for (let j = i+1; j < active.length; j++) {
-        const c1 = active[i], c2 = active[j];
-        // Scan °C range in small steps
-        let prev = null;
-        for (let t = 0; t <= 100; t += 0.5) {
-          const s1 = interpolateSolubility(c1, t);
-          const s2 = interpolateSolubility(c2, t);
-          const diff = s1 - s2;
-          if (prev !== null && Math.sign(diff) !== Math.sign(prev.diff) && Math.abs(diff) < 5) {
-            const tIntersect = t - 0.25;
-            const sIntersect = (interpolateSolubility(c1, tIntersect) + interpolateSolubility(c2, tIntersect)) / 2;
-            const dispT = toDisplayTemp(tIntersect, state.tempScale);
-            const scaledS = sIntersect * state.waterAmount / 100;
-            found.push({ t: tIntersect, dispT, s: scaledS, c1: c1.formula, c2: c2.formula });
+    for (let i=0; i<active.length; i++) {
+      for (let j=i+1; j<active.length; j++) {
+        const c1=active[i], c2=active[j];
+        let prev=null;
+        for (let t=0; t<=100; t+=0.5) {
+          const diff = interpSol(c1,t)-interpSol(c2,t);
+          if (prev!==null && Math.sign(diff)!==Math.sign(prev)) {
+            const tX = t-0.5 + 0.5*Math.abs(prev)/(Math.abs(prev)+Math.abs(diff));
+            const sX = interpSol(c1,tX);
+            const dispT = toDisplayTemp(tX, state.tempScale);
+            const scaledS = sX * state.waterAmount/100;
+            found.push({ tC:tX, dispT, s:scaledS, c1:c1.formula, c2:c2.formula });
           }
-          prev = { diff };
+          prev = diff;
         }
       }
     }
-
-    if (found.length === 0) {
-      list.innerHTML = '<div style="font-size:11px;color:var(--text-dim);padding:4px;">No intersections found among selected compounds.</div>';
+    if (found.length===0) {
+      list.innerHTML='<div style="font-size:11px;color:var(--text-dim);padding:4px 0;">No intersections found among selected compounds.</div>';
       return;
     }
-
     found.forEach(f => {
       const item = document.createElement('div');
       item.className = 'intersect-item';
-      item.innerHTML = `<b>${f.c1} × ${f.c2}</b><br>${Math.round(f.dispT*10)/10}${tempUnit(state.tempScale)}, ${Math.round(f.s*10)/10}g`;
-      item.addEventListener('click', () => {
-        document.getElementById('pt-x').value = Math.round(f.dispT*10)/10;
-        document.getElementById('pt-y').value = Math.round(f.s*10)/10;
-        showAlert(`Point set: ${Math.round(f.dispT*10)/10}${tempUnit(state.tempScale)}, ${Math.round(f.s*10)/10}g`);
-      });
+      item.innerHTML = `<b>${f.c1} ∩ ${f.c2}</b><br>${Math.round(f.dispT*10)/10}${tempUnit(state.tempScale)}, ${Math.round(f.s*10)/10}g <span style="color:var(--accent);font-size:10px;">↑ click to plot</span>`;
+      item.onclick = () => {
+        state.points.push({ xDisp:Math.round(f.dispT*10)/10, yScaled:Math.round(f.s*10)/10, ...defaultProps() });
+        rebuildPointsList(); draw();
+        showAlert(`Plotted: ${Math.round(f.dispT*10)/10}${tempUnit(state.tempScale)}, ${Math.round(f.s*10)/10}g`);
+      };
       list.appendChild(item);
     });
   }
 
+  // ── CUSTOM COMPOUND MODAL ──
+  function openAddCompoundModal() {
+    document.getElementById('modal-name').value='';
+    document.getElementById('modal-formula').value='';
+    document.getElementById('modal-color').value='#'+Math.floor(Math.random()*0xffffff).toString(16).padStart(6,'0');
+    const grid=document.getElementById('modal-data-grid');
+    grid.innerHTML='';
+    [0,20,40,60,80,100].forEach(t => addModalDataRow(t,''));
+    document.getElementById('add-compound-modal').style.display='flex';
+  }
+  function closeAddCompoundModal() {
+    document.getElementById('add-compound-modal').style.display='none';
+  }
+  function addModalDataRow(tVal, sVal) {
+    const grid = document.getElementById('modal-data-grid');
+    const row = document.createElement('div'); row.className='modal-data-row';
+    const ti=document.createElement('input'); ti.type='number'; ti.placeholder='°C';
+    if (tVal!==undefined) ti.value=tVal;
+    const si=document.createElement('input'); si.type='number'; si.placeholder='g/100g';
+    if (sVal!==undefined&&sVal!=='') si.value=sVal;
+    row.appendChild(ti); row.appendChild(si);
+    grid.appendChild(row);
+  }
+  function confirmAddCompound() {
+    const name = document.getElementById('modal-name').value.trim();
+    const formula = document.getElementById('modal-formula').value.trim();
+    const color = document.getElementById('modal-color').value;
+    if (!name||!formula) { showAlert('Name and formula are required.'); return; }
+    const rows = document.getElementById('modal-data-grid').querySelectorAll('.modal-data-row');
+    const data=[];
+    rows.forEach(row => {
+      const ins=row.querySelectorAll('input');
+      const t=parseFloat(ins[0].value), s=parseFloat(ins[1].value);
+      if (!isNaN(t)&&!isNaN(s)) data.push([t,s]);
+    });
+    if (data.length<2) { showAlert('Add at least 2 valid data points.'); return; }
+    data.sort((a,b)=>a[0]-b[0]);
+    const id='custom_'+Date.now();
+    const nc={id,name,formula,defaultColor:color,data};
+    const customs=[...loadCustomCompounds(),nc];
+    saveCustomCompounds(customs);
+    SOLUBILITY_DATA.push(nc);
+    state.colors[id]=color;
+    state.selected.add(id);
+    buildCompoundList(); updateSaList(); closeAddCompoundModal(); draw();
+    showAlert(`${name} added successfully.`);
+  }
+  function removeCustom(id) {
+    SOLUBILITY_DATA=SOLUBILITY_DATA.filter(c=>c.id!==id);
+    state.selected.delete(id);
+    saveCustomCompounds(loadCustomCompounds().filter(c=>c.id!==id));
+    buildCompoundList(); updateSaList(); draw();
+    showAlert('Custom compound removed.');
+  }
+
   // ── EXPORT ──
   function exportPNG() {
-    let exportCanvas = canvas;
-    if (state.transparentBg) {
-      exportCanvas = document.createElement('canvas');
-      exportCanvas.width = canvas.width;
-      exportCanvas.height = canvas.height;
-      const ectx = exportCanvas.getContext('2d');
-      ectx.clearRect(0,0,exportCanvas.width,exportCanvas.height);
-      ectx.drawImage(canvas, 0, 0);
-    }
-    const link = document.createElement('a');
-    link.download = 'solubility-curve.png';
-    link.href = exportCanvas.toDataURL('image/png');
+    const link=document.createElement('a');
+    link.download='solubility-curve.png';
+    link.href=canvas.toDataURL('image/png');
     link.click();
   }
 
   // ── ALERT ──
   function showAlert(msg) {
-    const existing = document.querySelector('.styled-alert');
-    if (existing) existing.remove();
-    const el = document.createElement('div');
-    el.className = 'styled-alert';
-    el.textContent = msg;
-    document.body.appendChild(el);
-    setTimeout(() => el.remove(), 2400);
+    document.querySelectorAll('.styled-alert').forEach(e=>e.remove());
+    const el=document.createElement('div'); el.className='styled-alert'; el.textContent=msg;
+    document.body.appendChild(el); setTimeout(()=>el.remove(),2400);
   }
 
-  // ── WIRE UP CONTROLS ──
+  // ── BIND CONTROLS ──
   function bindControls() {
     canvas.addEventListener('click', onCanvasClick);
+    document.getElementById('mono-color').onchange = e => { state.monoColor=e.target.checked; draw(); };
 
-    document.getElementById('mono-color').addEventListener('change', e => { state.monoColor = e.target.checked; draw(); });
-    document.getElementById('temp-scale').addEventListener('change', e => {
-      const prev = state.tempScale;
-      state.tempScale = e.target.value;
-      // Convert xMin/xMax
-      const xMinC = fromDisplayTemp(state.xMin, prev);
-      const xMaxC = fromDisplayTemp(state.xMax, prev);
-      state.xMin = Math.round(toDisplayTemp(xMinC, state.tempScale));
-      state.xMax = Math.round(toDisplayTemp(xMaxC, state.tempScale));
-      document.getElementById('x-min').value = state.xMin;
-      document.getElementById('x-max').value = state.xMax;
-      // Update tick
-      if (state.tempScale === 'F') { state.xTick = 20; document.getElementById('x-tick-num').value = 20; document.getElementById('x-tick-range').value = 20; }
-      else if (state.tempScale === 'K') { state.xTick = 10; document.getElementById('x-tick-num').value = 10; document.getElementById('x-tick-range').value = 10; }
-      else { state.xTick = 10; document.getElementById('x-tick-num').value = 10; document.getElementById('x-tick-range').value = 10; }
-      rebuildPointsList();
-      draw();
-    });
+    document.getElementById('temp-scale').onchange = e => {
+      const prev=state.tempScale; state.tempScale=e.target.value;
+      state.xMin=Math.round(toDisplayTemp(fromDisplayTemp(state.xMin,prev),state.tempScale));
+      state.xMax=Math.round(toDisplayTemp(fromDisplayTemp(state.xMax,prev),state.tempScale));
+      document.getElementById('x-min').value=state.xMin;
+      document.getElementById('x-max').value=state.xMax;
+      const tick=state.tempScale==='F'?20:10;
+      state.xTick=tick;
+      document.getElementById('x-tick-num').value=tick;
+      document.getElementById('x-tick-range').value=tick;
+      rebuildPointsList(); draw();
+    };
 
-    function bind(id, key, isFloat) {
-      const el = document.getElementById(id);
-      if (!el) return;
-      el.addEventListener('change', () => {
-        state[key] = isFloat ? parseFloat(el.value) : parseInt(el.value);
-        syncSliders(id);
-        draw();
-      });
+    function b(id,key,fl){ const el=document.getElementById(id); if(!el)return; el.onchange=()=>{state[key]=fl?parseFloat(el.value):parseInt(el.value);draw();}; }
+    function bp(rid,nid,key,fl){
+      const r=document.getElementById(rid),n=document.getElementById(nid); if(!r||!n)return;
+      r.oninput=()=>{n.value=r.value;state[key]=fl?parseFloat(r.value):parseInt(r.value);draw();};
+      n.onchange=()=>{r.value=n.value;state[key]=fl?parseFloat(n.value):parseInt(n.value);draw();};
     }
-    function bindSliderPair(rangeId, numId, key, isFloat) {
-      const r = document.getElementById(rangeId);
-      const n = document.getElementById(numId);
-      if (!r || !n) return;
-      r.addEventListener('input', () => { n.value = r.value; state[key] = isFloat ? parseFloat(r.value) : parseInt(r.value); draw(); });
-      n.addEventListener('change', () => { r.value = n.value; state[key] = isFloat ? parseFloat(n.value) : parseInt(n.value); draw(); });
-    }
-
-    bind('x-min','xMin',false); bind('x-max','xMax',false);
-    bind('y-min','yMin',false); bind('y-max','yMax',false);
-    bind('water-amount','waterAmount',false);
-    bindSliderPair('x-tick-range','x-tick-num','xTick',false);
-    bindSliderPair('y-tick-range','y-tick-num','yTick',false);
-    bindSliderPair('zoom-range','zoom-num','zoom',false);
-    bindSliderPair('font-range','font-num','fontSize',false);
-
-    document.getElementById('transparent-bg').addEventListener('change', e => { state.transparentBg = e.target.checked; draw(); });
-  }
-  function syncSliders(id) {
-    // no-op, sliders handle their own sync via bindSliderPair
+    b('x-min','xMin',false); b('x-max','xMax',false);
+    b('y-min','yMin',false); b('y-max','yMax',false);
+    b('water-amount','waterAmount',false);
+    bp('x-tick-range','x-tick-num','xTick',false);
+    bp('y-tick-range','y-tick-num','yTick',false);
+    bp('zoom-range','zoom-num','zoom',false);
+    bp('font-range','font-num','fontSize',false);
+    bp('default-line-thick-range','default-line-thick-num','_lt',true);
+    document.getElementById('transparent-bg').onchange = e => { state.transparentBg=e.target.checked; draw(); };
+    document.getElementById('add-compound-modal').addEventListener('click', function(e){ if(e.target===this)closeAddCompoundModal(); });
   }
 
-  // ── INIT ──
   function init() {
-    buildCompoundList();
-    updateSaCompoundList();
-    bindControls();
-    draw();
+    buildCompoundList(); updateSaList(); bindControls(); draw();
   }
 
-  return { init, draw, addPointManual, analyzeSaturation, findIntersections, exportPNG };
+  return { init, draw, addPointManual, analyzeSaturation, findIntersections, exportPNG,
+           openAddCompoundModal, closeAddCompoundModal, addModalDataRow, confirmAddCompound };
 })();
 
 window.addEventListener('load', () => SC.init());
