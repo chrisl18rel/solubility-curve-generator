@@ -103,30 +103,54 @@
     .compound-delete-btn { background: none; border: none; color: var(--text-dim); cursor: pointer; font-size: 14px; padding: 0 1px; flex-shrink: 0; line-height: 1; }
     .compound-delete-btn:hover { color: var(--red); }
 
-    /* Custom color picker popover */
+    /* ── ADVANCED HSB COLOR PICKER ── */
     .color-popover {
-      position: fixed; z-index: 2000; background: var(--surface);
-      border: 1px solid var(--border2); border-radius: 10px;
-      padding: 14px; box-shadow: 0 8px 32px rgba(0,0,0,0.5);
-      width: 220px;
+      position: fixed; z-index: 2000;
+      background: #1e2030; border: 1px solid #3a3a5a; border-radius: 8px;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.7);
+      width: 300px; padding: 0; overflow: hidden; user-select: none;
     }
-    .color-popover-title { font-size: 11px; font-weight: 700; color: var(--text-dim); margin-bottom: 10px; text-transform: uppercase; letter-spacing: 0.8px; }
-    .color-popover input[type="color"] {
-      width: 100%; height: 46px; border: 1px solid var(--border2); border-radius: 6px;
-      background: var(--bg); cursor: pointer; padding: 2px; margin-bottom: 8px;
+    /* Saturation/brightness gradient box */
+    .cp-sb-canvas { display: block; width: 100%; height: 160px; cursor: crosshair; }
+    /* Hue + alpha strip row */
+    .cp-strips { display: flex; gap: 8px; padding: 8px 10px 4px; }
+    .cp-strip-col { flex: 1; display: flex; flex-direction: column; gap: 5px; }
+    .cp-hue-bar, .cp-alpha-bar { width: 100%; height: 14px; border-radius: 7px; cursor: pointer; position: relative; }
+    .cp-hue-bar { background: linear-gradient(to right,#f00,#ff0,#0f0,#0ff,#00f,#f0f,#f00); }
+    .cp-strip-thumb {
+      position: absolute; top: 50%; transform: translate(-50%,-50%);
+      width: 16px; height: 16px; border-radius: 50%;
+      border: 2px solid #fff; box-shadow: 0 1px 4px rgba(0,0,0,0.6);
+      pointer-events: none;
     }
-    .color-swatches { display: grid; grid-template-columns: repeat(7,1fr); gap: 5px; margin-bottom: 8px; }
-    .color-preset {
-      width: 100%; aspect-ratio: 1; border-radius: 4px; cursor: pointer;
-      border: 2px solid transparent; transition: border-color 0.1s;
+    /* Color preview swatch */
+    .cp-preview-col { width: 34px; display: flex; flex-direction: column; gap: 5px; padding-top: 2px; }
+    .cp-preview-swatch { width: 34px; height: 34px; border-radius: 5px; border: 1px solid rgba(255,255,255,0.15); flex-shrink: 0; }
+    /* Input fields */
+    .cp-inputs { display: flex; gap: 5px; padding: 4px 10px 8px; }
+    .cp-input-group { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 2px; }
+    .cp-input-group input[type="number"] {
+      width: 100%; background: #0d1117; border: 1px solid #3a3a5a; border-radius: 4px;
+      color: #e0e0e0; font-size: 11px; text-align: center; padding: 4px 2px; outline: none;
     }
-    .color-preset:hover { border-color: rgba(255,255,255,0.7); }
-    .color-hex-row { display: flex; gap: 6px; align-items: center; }
-    .color-hex-row input[type="text"] { flex: 1; font-size: 11px; font-family: monospace; }
-    .color-hex-row button { flex-shrink: 0; background: var(--accent); color: #fff; border: none; border-radius: 4px; padding: 5px 10px; font-size: 11px; font-weight: 600; cursor: pointer; }
-    .color-hex-row button:hover { background: #357abd; }
-    .color-popover-close { width: 100%; margin-top: 8px; background: var(--surface2); border: 1px solid var(--border2); color: var(--text-dim); border-radius: 5px; padding: 5px; font-size: 11px; cursor: pointer; }
-    .color-popover-close:hover { background: var(--border2); }
+    .cp-input-group input[type="number"]:focus { border-color: #4a90e2; }
+    .cp-input-group input[type="number"]::-webkit-inner-spin-button { display: none; }
+    .cp-input-label { font-size: 9px; color: #6a6a8a; text-transform: uppercase; letter-spacing: 0.5px; }
+    .cp-hex-group { flex: 1.4; }
+    .cp-hex-group input[type="text"] {
+      width: 100%; background: #0d1117; border: 1px solid #3a3a5a; border-radius: 4px;
+      color: #e0e0e0; font-size: 11px; font-family: 'Courier New', monospace; text-align: center;
+      padding: 4px 2px; outline: none;
+    }
+    .cp-hex-group input[type="text"]:focus { border-color: #4a90e2; }
+    /* Mode selector */
+    .cp-mode-row { display: flex; justify-content: center; gap: 4px; padding: 0 10px 6px; }
+    .cp-mode-btn {
+      flex: 1; font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.6px;
+      background: none; border: 1px solid #3a3a5a; color: #6a6a8a;
+      border-radius: 3px; padding: 3px 2px; cursor: pointer; transition: all 0.1s;
+    }
+    .cp-mode-btn.active { background: #3a3a5a; color: #e0e0e0; border-color: #5a5a7a; }
 
     /* Point cards */
     .points-list { display: flex; flex-direction: column; gap: 7px; }
@@ -257,7 +281,7 @@
       <p>Interactive solubility curves for chemistry instruction</p>
     </div>
   </div>
-  <div class="app-version">v1.2</div>
+  <div class="app-version">v1.3</div>
 </header>
 
 <div class="app-body">
@@ -450,15 +474,22 @@ function toSubscripts(str) {
 
 // ─────────────────────────────────────────────────────────
 // IUPAC INORGANIC NAMING VALIDATION
-// Rules encoded: cation name + anion name, common patterns,
-// Roman numerals for variable-valence metals, hydrates,
-// and common acceptable exceptions (Water, Sugar, etc.)
+// Variable-valence metals (Fe, Cu, Pb, Sn, etc.) MUST include
+// a Roman numeral in parentheses: e.g. "Copper(II) Chloride".
+// Single-valence metals (Na, K, Ca, etc.) need no Roman numeral.
 // ─────────────────────────────────────────────────────────
-const IUPAC_CATIONS = [
-  'hydrogen','lithium','sodium','potassium','rubidium','cesium','magnesium','calcium',
-  'strontium','barium','aluminium','aluminum','silver','zinc','copper','iron','cobalt',
-  'nickel','manganese','chromium','lead','tin','mercury','gold','platinum','titanium',
-  'vanadium','tungsten','molybdenum','cerium','lanthanum','ammonium','hydronium'
+const IUPAC_SINGLE_VALENCE_CATIONS = [
+  'hydrogen','lithium','sodium','potassium','rubidium','cesium','francium',
+  'magnesium','calcium','strontium','barium','radium',
+  'aluminium','aluminum','silver','zinc','ammonium','hydronium',
+  'cerium','lanthanum','scandium','yttrium'
+];
+// Variable-valence metals that REQUIRE a Roman numeral
+const IUPAC_VARIABLE_VALENCE_CATIONS = [
+  'copper','iron','cobalt','nickel','manganese','chromium','lead','tin',
+  'mercury','gold','platinum','titanium','vanadium','tungsten','molybdenum',
+  'palladium','osmium','iridium','ruthenium','rhodium','bismuth','antimony',
+  'arsenic','thallium','indium','germanium'
 ];
 const IUPAC_ANIONS = [
   'chloride','bromide','iodide','fluoride','oxide','sulfide','nitride','phosphide',
@@ -469,121 +500,260 @@ const IUPAC_ANIONS = [
   'superoxide','hypophosphite','phosphonate','formate','propanoate','butanoate'
 ];
 const IUPAC_PREFIXES_COVALENT = ['mono','di','tri','tetra','penta','hexa','hepta','octa','nona','deca'];
-const ROMAN_PATTERN = /\((i{1,3}|iv|vi{0,3}|ix|xl|l|xc|c|cd|d|cm|[ivxlcdm]+)\)/i;
+const ROMAN_PATTERN = /\((i{1,3}|iv|v?i{0,3})\)/i; // matches (I),(II),(III),(IV),(V),(VI) etc.
 const ACCEPTED_EXCEPTIONS = ['water','sucrose','sugar','glucose','fructose','lactose','glycine','urea','ethanol','methanol'];
 
 function validateIUPACName(name) {
   if (!name || name.trim().length < 2) return { ok: false, msg: '' };
   const lower = name.trim().toLowerCase();
-  // Accept common exceptions
+
+  // Accept common non-ionic exceptions
   if (ACCEPTED_EXCEPTIONS.some(e => lower.includes(e))) return { ok: true, msg: '' };
-  // Accept if it contains a valid cation
-  const hasCation = IUPAC_CATIONS.some(c => lower.includes(c));
-  // Accept if it contains a valid anion
+
+  const hasSingleValence = IUPAC_SINGLE_VALENCE_CATIONS.some(c => {
+    // whole-word match to avoid partial matches (e.g. "cobalt" in "cobaltite")
+    return new RegExp(`\\b${c}\\b`).test(lower);
+  });
+  const hasVariableValence = IUPAC_VARIABLE_VALENCE_CATIONS.some(c => new RegExp(`\\b${c}\\b`).test(lower));
   const hasAnion = IUPAC_ANIONS.some(a => lower.includes(a));
-  // Accept covalent binary names (e.g. "Carbon Dioxide")
   const hasCovalentPrefix = IUPAC_PREFIXES_COVALENT.some(p => lower.startsWith(p) || lower.includes(' '+p));
-  // Accept names with Roman numeral stock notation
   const hasRoman = ROMAN_PATTERN.test(name);
 
-  if (hasCation && (hasAnion || hasCovalentPrefix)) return { ok: true, msg: '' };
-  if (hasAnion) return { ok: true, msg: '' };
-  if (hasCovalentPrefix && lower.includes('ide')) return { ok: true, msg: '' };
-  if (hasRoman && hasCation) return { ok: true, msg: '' };
-
-  // Build helpful message
-  if (!hasCation && !hasAnion) {
-    return { ok: false, msg: 'Name does not appear to follow IUPAC conventions. Example: "Sodium Chloride", "Iron(III) Sulfate", "Dinitrogen Pentoxide".' };
+  // Variable-valence metal WITHOUT Roman numeral → reject
+  if (hasVariableValence && !hasRoman) {
+    const metal = IUPAC_VARIABLE_VALENCE_CATIONS.find(c => new RegExp(`\\b${c}\\b`).test(lower));
+    const cap = metal.charAt(0).toUpperCase() + metal.slice(1);
+    return { ok: false, msg: `"${cap}" has variable valence — you must specify the oxidation state using Roman numerals, e.g. "${cap}(II) ${hasAnion ? lower.split(' ').pop() : 'Chloride'}".` };
   }
-  if (hasCation && !hasAnion) {
-    return { ok: false, msg: 'Recognized a cation but no anion. Add the anion (e.g. "…chloride", "…sulfate", "…nitrate").' };
+
+  // Covalent binary: prefix + -ide ending
+  if (hasCovalentPrefix && lower.includes('ide')) return { ok: true, msg: '' };
+
+  // Single-valence + anion
+  if (hasSingleValence && hasAnion) return { ok: true, msg: '' };
+
+  // Variable-valence + Roman + anion
+  if (hasVariableValence && hasRoman && hasAnion) return { ok: true, msg: '' };
+  if (hasVariableValence && hasRoman) return { ok: true, msg: '' }; // e.g. Iron(III) Oxide
+
+  // Anion alone (e.g. common usage like "Permanganate")
+  if (hasAnion && !hasSingleValence && !hasVariableValence) return { ok: true, msg: '' };
+
+  // Build specific error message
+  if (!hasSingleValence && !hasVariableValence && !hasAnion) {
+    return { ok: false, msg: 'Name does not appear to follow IUPAC conventions. Examples: "Sodium Chloride", "Copper(II) Sulfate", "Dinitrogen Pentoxide".' };
+  }
+  if ((hasSingleValence || hasVariableValence) && !hasAnion) {
+    return { ok: false, msg: 'Recognized a cation but no anion. Add the anion (e.g. "…Chloride", "…Sulfate", "…Nitrate").' };
   }
   return { ok: true, msg: '' };
 }
 
 // ─────────────────────────────────────────────────────────
-// CUSTOM COLOR PICKER POPOVER
+// ADVANCED HSB COLOR PICKER
 // ─────────────────────────────────────────────────────────
-const PRESET_COLORS = [
-  '#e53935','#e91e63','#9c27b0','#3f51b5','#1e88e5','#039be5','#00acc1',
-  '#00897b','#43a047','#7cb342','#c0ca33','#fdd835','#ffb300','#fb8c00',
-  '#f4511e','#6d4c41','#546e7a','#78909c','#9e9e9e','#000000','#ffffff'
-];
-
 let _colorPopover = null;
 let _colorCallback = null;
+
+// Color conversion helpers
+function hexToRgb(hex){
+  const r=parseInt(hex.slice(1,3),16),g=parseInt(hex.slice(3,5),16),b=parseInt(hex.slice(5,7),16);
+  return {r,g,b};
+}
+function rgbToHex(r,g,b){
+  return '#'+[r,g,b].map(v=>Math.round(Math.max(0,Math.min(255,v))).toString(16).padStart(2,'0')).join('');
+}
+function rgbToHsb(r,g,b){
+  r/=255;g/=255;b/=255;
+  const max=Math.max(r,g,b),min=Math.min(r,g,b),d=max-min;
+  let h=0;
+  if(d>0){
+    if(max===r) h=((g-b)/d+6)%6;
+    else if(max===g) h=(b-r)/d+2;
+    else h=(r-g)/d+4;
+    h=Math.round(h*60);
+  }
+  const s=max>0?Math.round(d/max*100):0;
+  const v=Math.round(max*100);
+  return {h,s,v};
+}
+function hsbToRgb(h,s,v){
+  s/=100;v/=100;
+  const c=v*s,x=c*(1-Math.abs((h/60)%2-1)),m=v-c;
+  let r=0,g=0,b=0;
+  if(h<60){r=c;g=x;}else if(h<120){r=x;g=c;}else if(h<180){g=c;b=x;}
+  else if(h<240){g=x;b=c;}else if(h<300){r=x;b=c;}else{r=c;b=x;}
+  return {r:Math.round((r+m)*255),g:Math.round((g+m)*255),b:Math.round((b+m)*255)};
+}
+function hsbToHex(h,s,v){ const {r,g,b}=hsbToRgb(h,s,v); return rgbToHex(r,g,b); }
 
 function openColorPicker(anchorEl, currentColor, onColorChange) {
   closeColorPicker();
   _colorCallback = onColorChange;
 
-  const pop = document.createElement('div');
-  pop.className = 'color-popover';
-  pop.id = 'color-popover';
+  // Parse initial color
+  let {r:ir,g:ig,b:ib}=hexToRgb(currentColor||'#e53935');
+  let {h:ih,s:is,v:iv}=rgbToHsb(ir,ig,ib);
+  let cpH=ih,cpS=is,cpV=iv; // current HSB state
+  let cpMode='HSB'; // 'HSB' or 'RGB'
 
-  let hexVal = currentColor;
-  pop.innerHTML = `
-    <div class="color-popover-title">Choose Color</div>
-    <input type="color" id="cp-native" value="${currentColor}" />
-    <div class="color-swatches" id="cp-swatches"></div>
-    <div class="color-hex-row">
-      <input type="text" id="cp-hex" value="${currentColor}" maxlength="7" placeholder="#rrggbb" />
-      <button id="cp-hex-apply">Apply</button>
+  const pop=document.createElement('div');
+  pop.className='color-popover';
+  pop.innerHTML=`
+    <canvas class="cp-sb-canvas" id="cp-sb" width="300" height="160"></canvas>
+    <div class="cp-strips">
+      <div class="cp-strip-col">
+        <div class="cp-hue-bar" id="cp-hue"><div class="cp-strip-thumb" id="cp-hue-thumb"></div></div>
+      </div>
+      <div class="cp-preview-col">
+        <div class="cp-preview-swatch" id="cp-preview"></div>
+      </div>
     </div>
-    <button class="color-popover-close" id="cp-close">Done</button>
+    <div class="cp-mode-row">
+      <button class="cp-mode-btn active" data-mode="HSB">HSB</button>
+      <button class="cp-mode-btn" data-mode="RGB">RGB</button>
+    </div>
+    <div class="cp-inputs" id="cp-inputs"></div>
   `;
-
   document.body.appendChild(pop);
-  _colorPopover = pop;
+  _colorPopover=pop;
 
-  // Position near anchor
-  const r = anchorEl.getBoundingClientRect();
-  let top = r.bottom + 6, left = r.left;
-  if (left + 220 > window.innerWidth) left = window.innerWidth - 228;
-  if (top + 280 > window.innerHeight) top = r.top - 286;
-  pop.style.top = top + 'px';
-  pop.style.left = left + 'px';
+  // Position
+  const r=anchorEl.getBoundingClientRect();
+  let top=r.bottom+6,left=r.left;
+  if(left+300>window.innerWidth) left=window.innerWidth-308;
+  if(top+320>window.innerHeight) top=r.top-326;
+  pop.style.top=top+'px'; pop.style.left=left+'px';
 
-  // Preset swatches
-  const swatchGrid = pop.querySelector('#cp-swatches');
-  PRESET_COLORS.forEach(c => {
-    const s = document.createElement('div');
-    s.className = 'color-preset';
-    s.style.background = c;
-    s.title = c;
-    if (c === currentColor) s.style.borderColor = 'rgba(255,255,255,0.9)';
-    s.addEventListener('click', () => { applyColor(c); });
-    swatchGrid.appendChild(s);
-  });
+  const sbCanvas=pop.querySelector('#cp-sb');
+  const sbCtx=sbCanvas.getContext('2d');
+  const hueBar=pop.querySelector('#cp-hue');
+  const hueThumb=pop.querySelector('#cp-hue-thumb');
+  const preview=pop.querySelector('#cp-preview');
+  const inputsEl=pop.querySelector('#cp-inputs');
 
-  function applyColor(c) {
-    hexVal = c;
-    pop.querySelector('#cp-native').value = c;
-    pop.querySelector('#cp-hex').value = c;
-    anchorEl.style.background = c;
-    _colorCallback && _colorCallback(c);
+  function drawSB(){
+    const W=sbCanvas.width, H=sbCanvas.height;
+    // White→color gradient
+    const gradH=sbCtx.createLinearGradient(0,0,W,0);
+    gradH.addColorStop(0,'#fff');
+    gradH.addColorStop(1,`hsl(${cpH},100%,50%)`);
+    sbCtx.fillStyle=gradH; sbCtx.fillRect(0,0,W,H);
+    // Transparent→black gradient
+    const gradV=sbCtx.createLinearGradient(0,0,0,H);
+    gradV.addColorStop(0,'rgba(0,0,0,0)');
+    gradV.addColorStop(1,'rgba(0,0,0,1)');
+    sbCtx.fillStyle=gradV; sbCtx.fillRect(0,0,W,H);
+    // Draw SB cursor
+    const cx=(cpS/100)*W, cy=(1-cpV/100)*H;
+    sbCtx.beginPath(); sbCtx.arc(cx,cy,7,0,Math.PI*2);
+    sbCtx.strokeStyle='#fff'; sbCtx.lineWidth=2; sbCtx.stroke();
+    sbCtx.beginPath(); sbCtx.arc(cx,cy,5,0,Math.PI*2);
+    sbCtx.strokeStyle='rgba(0,0,0,0.4)'; sbCtx.lineWidth=1; sbCtx.stroke();
   }
+  function updateHueThumb(){ hueThumb.style.left=(cpH/360*100)+'%'; }
+  function updatePreview(){
+    const hex=hsbToHex(cpH,cpS,cpV);
+    preview.style.background=hex;
+    anchorEl.style.background=hex;
+    _colorCallback&&_colorCallback(hex);
+  }
+  function buildInputs(){
+    inputsEl.innerHTML='';
+    if(cpMode==='HSB'){
+      [['H',cpH,0,360],['S',cpS,0,100],['B',cpV,0,100]].forEach(([lbl,val,mn,mx])=>{
+        const g=document.createElement('div'); g.className='cp-input-group';
+        g.innerHTML=`<input type="number" min="${mn}" max="${mx}" value="${Math.round(val)}" /><span class="cp-input-label">${lbl}</span>`;
+        const inp=g.querySelector('input');
+        inp.addEventListener('change',()=>{
+          const v=Math.max(mn,Math.min(mx,parseInt(inp.value)||0));
+          inp.value=v;
+          if(lbl==='H') cpH=v; else if(lbl==='S') cpS=v; else cpV=v;
+          refreshAll();
+        });
+        inputsEl.appendChild(g);
+      });
+    } else {
+      const {r,g,b}=hsbToRgb(cpH,cpS,cpV);
+      [['R',r],['G',g],['B',b]].forEach(([lbl,val])=>{
+        const gp=document.createElement('div'); gp.className='cp-input-group';
+        gp.innerHTML=`<input type="number" min="0" max="255" value="${Math.round(val)}" /><span class="cp-input-label">${lbl}</span>`;
+        const inp=gp.querySelector('input');
+        inp.addEventListener('change',()=>{
+          const rv=parseInt(pop.querySelectorAll('.cp-input-group input')[0].value)||0;
+          const gv=parseInt(pop.querySelectorAll('.cp-input-group input')[1].value)||0;
+          const bv=parseInt(pop.querySelectorAll('.cp-input-group input')[2].value)||0;
+          const hsb=rgbToHsb(Math.max(0,Math.min(255,rv)),Math.max(0,Math.min(255,gv)),Math.max(0,Math.min(255,bv)));
+          cpH=hsb.h; cpS=hsb.s; cpV=hsb.v;
+          refreshAll();
+        });
+        inputsEl.appendChild(gp);
+      });
+    }
+    // Hex
+    const hg=document.createElement('div'); hg.className='cp-input-group cp-hex-group';
+    const hex=hsbToHex(cpH,cpS,cpV).slice(1).toUpperCase();
+    hg.innerHTML=`<input type="text" maxlength="6" value="${hex}" /><span class="cp-input-label">#</span>`;
+    const hexInp=hg.querySelector('input');
+    hexInp.addEventListener('change',()=>{
+      const v='#'+hexInp.value.replace(/[^0-9a-fA-F]/g,'').padStart(6,'0').slice(0,6);
+      const {r,g,b}=hexToRgb(v); const hsb=rgbToHsb(r,g,b);
+      cpH=hsb.h; cpS=hsb.s; cpV=hsb.v; refreshAll();
+    });
+    inputsEl.appendChild(hg);
+  }
+  function refreshAll(){
+    drawSB(); updateHueThumb(); updatePreview(); buildInputs();
+  }
+  refreshAll();
 
-  pop.querySelector('#cp-native').addEventListener('input', e => applyColor(e.target.value));
-  pop.querySelector('#cp-hex-apply').addEventListener('click', () => {
-    const v = pop.querySelector('#cp-hex').value.trim();
-    if (/^#[0-9a-fA-F]{6}$/.test(v)) applyColor(v);
+  // Mode buttons
+  pop.querySelectorAll('.cp-mode-btn').forEach(btn=>{
+    btn.addEventListener('click',()=>{
+      pop.querySelectorAll('.cp-mode-btn').forEach(b=>b.classList.remove('active'));
+      btn.classList.add('active');
+      cpMode=btn.dataset.mode;
+      buildInputs();
+    });
   });
-  pop.querySelector('#cp-hex').addEventListener('keydown', e => { if(e.key==='Enter') pop.querySelector('#cp-hex-apply').click(); });
-  pop.querySelector('#cp-close').addEventListener('click', closeColorPicker);
+
+  // SB canvas drag
+  function sbPick(e){
+    const rect=sbCanvas.getBoundingClientRect();
+    const x=Math.max(0,Math.min(sbCanvas.width,(e.clientX-rect.left)*sbCanvas.width/rect.width));
+    const y=Math.max(0,Math.min(sbCanvas.height,(e.clientY-rect.top)*sbCanvas.height/rect.height));
+    cpS=Math.round(x/sbCanvas.width*100);
+    cpV=Math.round((1-y/sbCanvas.height)*100);
+    refreshAll();
+  }
+  let sbDragging=false;
+  sbCanvas.addEventListener('mousedown',e=>{ sbDragging=true; sbPick(e); e.preventDefault(); });
+  document.addEventListener('mousemove',e=>{ if(sbDragging) sbPick(e); });
+  document.addEventListener('mouseup',()=>{ sbDragging=false; });
+
+  // Hue bar drag
+  function huePick(e){
+    const rect=hueBar.getBoundingClientRect();
+    const x=Math.max(0,Math.min(rect.width,e.clientX-rect.left));
+    cpH=Math.round(x/rect.width*360);
+    if(cpH>=360) cpH=359;
+    refreshAll();
+  }
+  let hueDragging=false;
+  hueBar.addEventListener('mousedown',e=>{ hueDragging=true; huePick(e); e.preventDefault(); });
+  document.addEventListener('mousemove',e=>{ if(hueDragging) huePick(e); });
+  document.addEventListener('mouseup',()=>{ hueDragging=false; });
 
   // Close on outside click
-  setTimeout(() => {
-    document.addEventListener('mousedown', _outsideClick);
-  }, 10);
+  setTimeout(()=>{ document.addEventListener('mousedown',_outsideClick); },20);
 }
 
-function _outsideClick(e) {
-  if (_colorPopover && !_colorPopover.contains(e.target)) closeColorPicker();
+function _outsideClick(e){
+  if(_colorPopover&&!_colorPopover.contains(e.target)) closeColorPicker();
 }
-function closeColorPicker() {
-  if (_colorPopover) { _colorPopover.remove(); _colorPopover = null; }
-  document.removeEventListener('mousedown', _outsideClick);
+function closeColorPicker(){
+  if(_colorPopover){ _colorPopover.remove(); _colorPopover=null; }
+  document.removeEventListener('mousedown',_outsideClick);
 }
 
 // ─────────────────────────────────────────────────────────
@@ -755,14 +925,17 @@ const SC = (() => {
       o.textContent=`${letter}: ${xR}${tempUnit(state.tempScale)}, ${yR}g`;
       sel.appendChild(o);
     });
+    // Track last real selection so analyzeSaturation can read it
+    sel._lastSelectedIdx=undefined;
     sel.onchange=()=>{
       const v=sel.value;
+      sel._lastSelectedIdx=(v==='')?undefined:v;
       if(v==='') return;
       const pt=state.points[parseInt(v)];
       if(!pt) return;
       document.getElementById('sa-temp').value=pt.xDisp;
       document.getElementById('sa-sol').value=pt.yScaled;
-      sel.value='';
+      // Don't reset selection so analyzeSaturation knows which point was chosen
     };
   }
 
@@ -923,7 +1096,9 @@ const SC = (() => {
     });
     ctx.strokeStyle='rgba(200,200,200,0.35)'; ctx.lineWidth=0.8*d.z;
     ctx.setLineDash([3*d.z,2*d.z]);
-    ctx.beginPath(); ctx.moveTo(cx,cy); ctx.lineTo(bx+(bx>cx?0:bw),by+bh/2); ctx.stroke();
+    if(ad.showConnector!==false){
+      ctx.beginPath(); ctx.moveTo(cx,cy); ctx.lineTo(bx+(bx>cx?0:bw),by+bh/2); ctx.stroke();
+    }
     ctx.setLineDash([]);
   }
 
@@ -988,7 +1163,9 @@ const SC = (() => {
         <div class="point-toggles">
           <label class="point-toggle"><input type="checkbox" class="pt-dotted" ${pt.showDotted?'checked':''} /> Show projection lines</label>
           <label class="point-toggle"><input type="checkbox" class="pt-coord" ${pt.showCoord?'checked':''} /> Show ordered pair label</label>
-          ${pt.analysisData?`<label class="point-toggle"><input type="checkbox" class="pt-analysis" ${pt.showAnalysisOnGraph?'checked':''} /> Show analysis card on graph</label>`:''}
+          ${pt.analysisData?`
+          <label class="point-toggle"><input type="checkbox" class="pt-analysis" ${pt.showAnalysisOnGraph?'checked':''} /> Show analysis card on graph</label>
+          <label class="point-toggle"><input type="checkbox" class="pt-connector" ${pt.analysisData&&pt.analysisData.showConnector!==false?'checked':''} /> Show connector line to card</label>`:''}
         </div>
         <div class="point-color-row">
           <label>Dot</label>
@@ -1008,6 +1185,8 @@ const SC = (() => {
       card.querySelector('.pt-coord').onchange=e=>{ pt.showCoord=e.target.checked; draw(); };
       const ac=card.querySelector('.pt-analysis');
       if(ac) ac.onchange=e=>{ pt.showAnalysisOnGraph=e.target.checked; draw(); };
+      const cc=card.querySelector('.pt-connector');
+      if(cc) cc.onchange=e=>{ if(pt.analysisData) pt.analysisData.showConnector=e.target.checked; draw(); };
 
       // Dot color picker
       const dotSw=card.querySelector('.pt-dot-sw');
@@ -1112,27 +1291,33 @@ const SC = (() => {
         ${detail2?`<div style="color:var(--text-dim)">${detail2}</div>`:''}
       </div>`;
 
-    if(document.getElementById('sa-plot-point').checked){
-      const showCard=document.getElementById('sa-show-on-graph').checked;
-      const ad={type,satLimit:satScaled.toFixed(1),detail1,detail2};
-      const newPt={xDisp:tempDisp,yScaled:Math.round(solAmt*10)/10,...defaultProps(),showAnalysisOnGraph:showCard,analysisData:ad};
+    const showCard=document.getElementById('sa-show-on-graph').checked;
+    const ad={type,satLimit:satScaled.toFixed(1),detail1,detail2,showConnector:true};
 
-      // Check if any existing analysis cards exist on the graph
+    // Check if the user selected an existing point from the dropdown
+    const fromPointSel=document.getElementById('sa-from-point');
+    const fromPointVal=fromPointSel._lastSelectedIdx;
+    const sourcePoint=(fromPointVal!==undefined&&fromPointVal!=='')?state.points[parseInt(fromPointVal)]:null;
+
+    if(sourcePoint){
+      // Attach analysis to the existing point — no new point created
+      const doAttach=()=>{
+        sourcePoint.analysisData=ad;
+        sourcePoint.showAnalysisOnGraph=showCard;
+        sourcePoint.cardOffsetX=0; sourcePoint.cardOffsetY=0;
+        rebuildPointsList(); draw();
+      };
+      // If the point already had an analysis card, just replace silently
+      doAttach();
+    } else if(document.getElementById('sa-plot-point').checked){
+      // No existing point selected — create a new one (with keep/replace dialog if needed)
+      const newPt={xDisp:tempDisp,yScaled:Math.round(solAmt*10)/10,...defaultProps(),showAnalysisOnGraph:showCard,analysisData:ad};
       const existingWithCards=state.points.filter(p=>p.analysisData&&p.showAnalysisOnGraph);
       if(existingWithCards.length>0){
-        showAnalysisChoiceDialog(()=>{
-          // Keep existing, just add new
-          state.points.push(newPt);
-          rebuildPointsList(); draw();
-        },()=>{
-          // Clear all existing analysis cards, then add new
-          state.points.forEach(p=>{ p.analysisData=null; p.showAnalysisOnGraph=false; });
-          state.points.push(newPt);
-          rebuildPointsList(); draw();
-        });
+        showAnalysisChoiceDialog(()=>{ state.points.push(newPt); rebuildPointsList(); draw(); },
+          ()=>{ state.points.forEach(p=>{ p.analysisData=null; p.showAnalysisOnGraph=false; }); state.points.push(newPt); rebuildPointsList(); draw(); });
       } else {
-        state.points.push(newPt);
-        rebuildPointsList(); draw();
+        state.points.push(newPt); rebuildPointsList(); draw();
       }
     }
   }
