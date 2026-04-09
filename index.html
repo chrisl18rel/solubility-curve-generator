@@ -281,7 +281,7 @@
       <p>Interactive solubility curves for chemistry instruction</p>
     </div>
   </div>
-  <div class="app-version">v1.3</div>
+  <div class="app-version">v1.4</div>
 </header>
 
 <div class="app-body">
@@ -442,7 +442,8 @@
     </div>
     <div class="modal-field">
       <label>Formula — subscript digits are auto-converted (e.g. H2O → H₂O)</label>
-      <input type="text" id="modal-formula" placeholder="e.g. KNO3 or KNO₃" />
+      <input type="text" id="modal-formula" placeholder="e.g. KNO3 or KNO₃" oninput="SC.liveValidateFormula()" />
+      <div class="modal-validation" id="modal-formula-error" style="display:none;"></div>
     </div>
     <div class="modal-field">
       <label>Line Color</label>
@@ -547,6 +548,168 @@ function validateIUPACName(name) {
     return { ok: false, msg: 'Recognized a cation but no anion. Add the anion (e.g. "…Chloride", "…Sulfate", "…Nitrate").' };
   }
   return { ok: true, msg: '' };
+}
+
+// ─────────────────────────────────────────────────────────
+// FORMULA ↔ NAME CONSISTENCY CHECK
+// Extracts the oxidation state from the IUPAC name (e.g. (II))
+// and the cation symbol, then derives the expected formula
+// stoichiometry and checks it against what the user entered.
+//
+// Key rules encoded (common inorganic):
+//   Cation oxidation state + anion charge → ratio via LCM
+//   Supported anions and their charges listed below.
+// ─────────────────────────────────────────────────────────
+const FORMULA_ANION_DATA = {
+  'chloride':  { symbol:'Cl',  charge:-1 },
+  'bromide':   { symbol:'Br',  charge:-1 },
+  'iodide':    { symbol:'I',   charge:-1 },
+  'fluoride':  { symbol:'F',   charge:-1 },
+  'oxide':     { symbol:'O',   charge:-2 },
+  'sulfide':   { symbol:'S',   charge:-2 },
+  'nitride':   { symbol:'N',   charge:-3 },
+  'phosphide': { symbol:'P',   charge:-3 },
+  'sulfate':   { symbol:'SO4', charge:-2 },
+  'sulfite':   { symbol:'SO3', charge:-2 },
+  'nitrate':   { symbol:'NO3', charge:-1 },
+  'nitrite':   { symbol:'NO2', charge:-1 },
+  'carbonate': { symbol:'CO3', charge:-2 },
+  'hydroxide': { symbol:'OH',  charge:-1 },
+  'phosphate': { symbol:'PO4', charge:-3 },
+  'acetate':   { symbol:'C2H3O2', charge:-1 },
+  'dichromate':{ symbol:'Cr2O7', charge:-2 },
+  'chromate':  { symbol:'CrO4', charge:-2 },
+  'permanganate':{ symbol:'MnO4', charge:-1 },
+  'iodate':    { symbol:'IO3', charge:-1 },
+  'perchlorate':{ symbol:'ClO4', charge:-1 },
+};
+
+const CATION_SYMBOLS = {
+  'copper':'Cu','iron':'Fe','cobalt':'Co','nickel':'Ni','manganese':'Mn',
+  'chromium':'Cr','lead':'Pb','tin':'Sn','mercury':'Hg','gold':'Au',
+  'platinum':'Pt','titanium':'Ti','vanadium':'V','tungsten':'W','molybdenum':'Mo',
+  'sodium':'Na','potassium':'K','lithium':'Li','calcium':'Ca','magnesium':'Mg',
+  'barium':'Ba','strontium':'Sr','aluminium':'Al','aluminum':'Al','silver':'Ag',
+  'zinc':'Zn','ammonium':'NH4','hydrogen':'H','cerium':'Ce','lanthanum':'La',
+};
+
+function gcd(a,b){ return b===0?a:gcd(b,a%b); }
+function lcm(a,b){ return (a*b)/gcd(a,b); }
+
+// Parse Roman numeral (I,II,III,IV,V,VI) → integer
+function romanToInt(s){
+  const map={I:1,V:5,X:10,L:50,C:100,D:500,M:1000};
+  let n=0; s=s.toUpperCase();
+  for(let i=0;i<s.length;i++){
+    const cur=map[s[i]]||0,nxt=map[s[i+1]]||0;
+    n+=cur<nxt?-cur:cur;
+  }
+  return n;
+}
+
+// Strip all Unicode subscripts and plain digits to a canonical uppercase formula
+// e.g. "CuCl₂" → "CuCl2", "Fe2(SO4)3" → "Fe2(SO4)3"
+function normalizeFormula(f){
+  const subToDigit={'₀':'0','₁':'1','₂':'2','₃':'3','₄':'4','₅':'5','₆':'6','₇':'7','₈':'8','₉':'9'};
+  return f.replace(/[₀₁₂₃₄₅₆₇₈₉]/g,c=>subToDigit[c]||c).trim();
+}
+
+function validateFormulaConsistency(name, formula) {
+  // Only validate when we can determine both the cation and anion from the name
+  const lower = name.trim().toLowerCase();
+
+  // Find anion
+  const anionKey = Object.keys(FORMULA_ANION_DATA).find(a => lower.includes(a));
+  if (!anionKey) return { ok: true, msg: '' }; // can't determine, skip
+
+  // Find cation
+  const allCations = [...IUPAC_SINGLE_VALENCE_CATIONS, ...IUPAC_VARIABLE_VALENCE_CATIONS];
+  const cationName = allCations.find(c => new RegExp(`\\b${c}\\b`).test(lower));
+  if (!cationName) return { ok: true, msg: '' };
+
+  const cationSymbol = CATION_SYMBOLS[cationName];
+  if (!cationSymbol) return { ok: true, msg: '' };
+
+  const anion = FORMULA_ANION_DATA[anionKey];
+
+  // Determine cation charge
+  let cationCharge;
+  if (IUPAC_SINGLE_VALENCE_CATIONS.includes(cationName)) {
+    // Map single-valence metals to their charges
+    const singleChargeMap = {
+      'sodium':1,'potassium':1,'lithium':1,'rubidium':1,'cesium':1,'francium':1,'silver':1,'hydrogen':1,'ammonium':1,
+      'magnesium':2,'calcium':2,'strontium':2,'barium':2,'radium':2,'zinc':2,
+      'aluminium':3,'aluminum':3,'cerium':3,'lanthanum':3,'scandium':3,'yttrium':3,
+    };
+    cationCharge = singleChargeMap[cationName];
+    if (!cationCharge) return { ok: true, msg: '' };
+  } else {
+    // Variable-valence: extract from Roman numeral
+    const romanMatch = name.match(/\(([IVXivx]+)\)/);
+    if (!romanMatch) return { ok: true, msg: '' };
+    cationCharge = romanToInt(romanMatch[1]);
+    if (!cationCharge) return { ok: true, msg: '' };
+  }
+
+  // Calculate expected subscripts via LCM of charges
+  const anionCharge = Math.abs(anion.charge);
+  const l = lcm(cationCharge, anionCharge);
+  const expectedCationCount = l / cationCharge;
+  const expectedAnionCount  = l / anionCharge;
+
+  // Build expected formula variants (with and without subscripts=1)
+  const cSym = cationSymbol;
+  const aSym = anion.symbol;
+  const cCount = expectedCationCount === 1 ? '' : String(expectedCationCount);
+  const aCount = expectedAnionCount  === 1 ? '' : String(expectedAnionCount);
+  // For polyatomic anions, subscript goes outside parens: e.g. Fe2(SO4)3
+  const isPolyatomic = aSym.length > 2;
+  let expectedFormula;
+  if (isPolyatomic) {
+    expectedFormula = `${cSym}${cCount}(${aSym})${aCount}`.replace(/\(\w+\)(?=[^0-9]|$)/, m => m.replace('()',''));
+    // Simplify: if anionCount=1, no parens needed? Actually keep parens for polyatomic
+    if (!aCount) expectedFormula = `${cSym}${cCount}${aSym}`; // single anion, drop parens
+  } else {
+    expectedFormula = `${cSym}${cCount}${aSym}${aCount}`;
+  }
+
+  // Normalize user formula for comparison (strip subscript unicode, spaces)
+  const normUser = normalizeFormula(formula).replace(/\s/g,'');
+  const normExpected = expectedFormula.replace(/\s/g,'');
+
+  // Check if user formula contains the right cation and anion counts
+  // We do a lenient check: does the normalized formula contain the expected counts?
+  // Build regex for expected pattern
+  const cCountRe = expectedCationCount === 1 ? '1?' : String(expectedCationCount);
+  const aCountRe = expectedAnionCount  === 1 ? '1?' : String(expectedAnionCount);
+
+  // Direct string match (most reliable)
+  if (normUser.toUpperCase() === normExpected.toUpperCase()) return { ok: true, msg: '' };
+
+  // Check that the cation symbol appears with the right count
+  const cationRegex = new RegExp(`${cSym}(\\d*)`, 'i');
+  const anionSymbol2 = isPolyatomic ? aSym.slice(0,2) : aSym;
+  const anionRegex  = new RegExp(`${anionSymbol2}[^\\d]*(\\d*)`, 'i');
+
+  const cMatch = normUser.match(cationRegex);
+  const aMatch = normUser.match(anionRegex);
+
+  const userCCount = cMatch ? (parseInt(cMatch[1])||1) : 0;
+  const userACount = aMatch ? (parseInt(aMatch[1])||1) : 0;
+
+  if (userCCount === expectedCationCount && userACount === expectedAnionCount) {
+    return { ok: true, msg: '' };
+  }
+
+  // Build human-readable expected formula for the error
+  const friendlyExpected = isPolyatomic
+    ? `${cSym}${cCount}(${aSym})${aCount}`.replace(/\(\)/,'')
+    : expectedFormula;
+
+  return {
+    ok: false,
+    msg: `Formula doesn't match the name. For ${name}, the expected formula is ${friendlyExpected} (cation charge: ${cationCharge}+, anion charge: ${anion.charge}).`
+  };
 }
 
 // ─────────────────────────────────────────────────────────
@@ -888,7 +1051,11 @@ const SC = (() => {
         row.classList.toggle('selected',chk.checked);
         updateSaList(); draw();
       });
-      row.addEventListener('click',e=>{ if(e.target.tagName!=='BUTTON') chk.click(); });
+      // Clicking anywhere on the row except the checkbox itself or action buttons toggles the checkbox
+      row.addEventListener('click',e=>{
+        if(e.target===chk||e.target.tagName==='BUTTON') return;
+        chk.click();
+      });
 
       row.appendChild(chk); row.appendChild(nm); row.appendChild(fm); row.appendChild(sw);
 
@@ -1012,10 +1179,15 @@ const SC = (() => {
       const cx=cxT(pt.xDisp), cy=cyS(pt.yScaled);
       if(cx<d.pL||cx>d.pL+d.pW||cy<d.pT||cy>d.pT+d.pH) return;
       if(pt.showDotted){
-        ctx.setLineDash([4*d.z,3*d.z]); ctx.strokeStyle=pt.lineColor||'#555'; ctx.lineWidth=(pt.lineThick||1)*d.z;
+        ctx.save();
+        ctx.strokeStyle=pt.lineColor||'#555'; ctx.lineWidth=(pt.lineThick||1)*d.z;
+        // Reset dash offset for each line so both start with a visible dash segment
+        ctx.setLineDash([4*d.z,3*d.z]); ctx.lineDashOffset=0;
         ctx.beginPath(); ctx.moveTo(cx,cy); ctx.lineTo(d.pL,cy); ctx.stroke();
+        ctx.setLineDash([4*d.z,3*d.z]); ctx.lineDashOffset=0;
         ctx.beginPath(); ctx.moveTo(cx,cy); ctx.lineTo(cx,d.pT+d.pH); ctx.stroke();
         ctx.setLineDash([]);
+        ctx.restore();
       }
       ctx.beginPath(); ctx.arc(cx,cy,5*d.z,0,Math.PI*2);
       ctx.fillStyle=pt.dotColor||'#e94560'; ctx.fill();
@@ -1081,6 +1253,21 @@ const SC = (() => {
     // Store rendered bbox for hit-testing during drag
     pt._cardBox={bx,by,bw,bh};
     const typeColor=ad.type==='Unsaturated'?'#4caf50':ad.type==='Saturated'?'#ffc107':'#ef5350';
+
+    // ── Draw connector line FIRST (behind the card) ──
+    if(ad.showConnector!==false){
+      ctx.save();
+      ctx.strokeStyle='rgba(180,180,180,0.55)';
+      ctx.lineWidth=1.2*d.z;
+      ctx.setLineDash([5*d.z,3*d.z]);
+      const cardEdgeX = bx > cx ? bx : bx+bw;
+      const cardEdgeY = by+bh/2;
+      ctx.beginPath(); ctx.moveTo(cx,cy); ctx.lineTo(cardEdgeX, cardEdgeY); ctx.stroke();
+      ctx.setLineDash([]);
+      ctx.restore();
+    }
+
+    // ── Card box ──
     ctx.fillStyle='rgba(15,52,96,0.93)';
     ctx.beginPath(); ctx.roundRect(bx,by,bw,bh,5*d.z); ctx.fill();
     ctx.strokeStyle=typeColor; ctx.lineWidth=1.5*d.z; ctx.stroke();
@@ -1094,12 +1281,6 @@ const SC = (() => {
       ctx.textAlign='left'; ctx.textBaseline='top';
       ctx.fillText(line,bx+pad,ty); ty+=lh;
     });
-    ctx.strokeStyle='rgba(200,200,200,0.35)'; ctx.lineWidth=0.8*d.z;
-    ctx.setLineDash([3*d.z,2*d.z]);
-    if(ad.showConnector!==false){
-      ctx.beginPath(); ctx.moveTo(cx,cy); ctx.lineTo(bx+(bx>cx?0:bw),by+bh/2); ctx.stroke();
-    }
-    ctx.setLineDash([]);
   }
 
   // ── DRAG HANDLERS FOR ANALYSIS CARDS ──
@@ -1405,6 +1586,18 @@ const SC = (() => {
     const errEl=document.getElementById('modal-name-error');
     const result=window.validateIUPACName(name);
     errEl.textContent=result.msg;
+    // Also re-run formula check when name changes
+    liveValidateFormula();
+  }
+  function liveValidateFormula(){
+    const name=document.getElementById('modal-name').value.trim();
+    const formula=document.getElementById('modal-formula').value.trim();
+    const errEl=document.getElementById('modal-formula-error');
+    if(!errEl) return;
+    if(!name||!formula){ errEl.textContent=''; errEl.style.display='none'; return; }
+    const result=validateFormulaConsistency(name,formula);
+    if(!result.ok){ errEl.textContent=result.msg; errEl.style.display='block'; }
+    else { errEl.textContent=''; errEl.style.display='none'; }
   }
   function confirmAddCompound(){
     const name=document.getElementById('modal-name').value.trim();
@@ -1418,6 +1611,17 @@ const SC = (() => {
 
     // Auto-convert plain digits in formula to Unicode subscripts
     const formula=toSubscripts(rawFormula);
+
+    // Formula ↔ name consistency check
+    const fCheck=validateFormulaConsistency(name, rawFormula);
+    if(!fCheck.ok){
+      const errEl=document.getElementById('modal-formula-error');
+      if(errEl){ errEl.textContent=fCheck.msg; errEl.style.display='block'; }
+      showAlert('Formula does not match the compound name.');
+      return;
+    }
+    const errEl=document.getElementById('modal-formula-error');
+    if(errEl){ errEl.textContent=''; errEl.style.display='none'; }
 
     const rows=document.getElementById('modal-data-grid').querySelectorAll('.modal-data-row');
     const data=[];
@@ -1496,7 +1700,7 @@ const SC = (() => {
 
   return { init, draw, addPointManual, analyzeSaturation, findIntersections, exportPNG,
            openAddCompoundModal, closeAddCompoundModal, addModalDataRow, confirmAddCompound,
-           validateIUPACName, selectAll, deselectAll };
+           validateIUPACName, liveValidateFormula, selectAll, deselectAll };
 })();
 
 // Expose validateIUPACName to window for inline oninput handler
