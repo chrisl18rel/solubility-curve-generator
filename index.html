@@ -281,7 +281,7 @@
       <p>Interactive solubility curves for chemistry instruction</p>
     </div>
   </div>
-  <div class="app-version">v1.5</div>
+  <div class="app-version">v1.6</div>
 </header>
 
 <div class="app-body">
@@ -1035,8 +1035,9 @@ const SC = (() => {
     return (30 + state.titleFontSize * 1.6)*z;
   }
 
-  // ── Drag state for analysis cards ──
+  // ── Drag state for analysis cards and point dots ──
   let drag = null;
+  let _dragMoved = false; // true if mouse moved meaningfully during mousedown→mouseup
 
   function getSize(){ const z=state.zoom/100; return { w:Math.round(760*z), h:Math.round(520*z) }; }
   function getDims(){
@@ -1316,11 +1317,13 @@ const SC = (() => {
     });
   }
 
-  // ── DRAG HANDLERS FOR ANALYSIS CARDS ──
+  // ── DRAG HANDLERS — supports both point dots and analysis cards ──
   function getCanvasPos(e){
     const r=canvas.getBoundingClientRect();
     return { cx:(e.clientX-r.left)*canvas.width/r.width, cy:(e.clientY-r.top)*canvas.height/r.height };
   }
+
+  // Returns index of analysis card hit at (cx,cy), or -1
   function hitTestCards(cx,cy){
     for(let i=state.points.length-1;i>=0;i--){
       const pt=state.points[i];
@@ -1332,32 +1335,102 @@ const SC = (() => {
     return -1;
   }
 
+  // Returns index of point dot hit at (cx,cy), or -1
+  function hitTestPoints(cx,cy){
+    const d=getDims();
+    const hitRadius=10*d.z; // generous hit area around the 5px dot
+    for(let i=state.points.length-1;i>=0;i--){
+      const pt=state.points[i];
+      const yMinS=state.yMin*state.waterAmount/100;
+      const yMaxS=state.yMax*state.waterAmount/100;
+      const px=d.pL+(pt.xDisp-state.xMin)/(state.xMax-state.xMin)*d.pW;
+      const py=d.pT+(1-(pt.yScaled-yMinS)/(yMaxS-yMinS))*d.pH;
+      const dx=cx-px, dy=cy-py;
+      if(Math.sqrt(dx*dx+dy*dy)<=hitRadius) return i;
+    }
+    return -1;
+  }
+
+  // Convert canvas coords → data coords
+  function canvasToData(cx,cy){
+    const d=getDims();
+    const yMinS=state.yMin*state.waterAmount/100;
+    const yMaxS=state.yMax*state.waterAmount/100;
+    const xD=state.xMin+(cx-d.pL)/d.pW*(state.xMax-state.xMin);
+    const yS=yMinS+(1-(cy-d.pT)/d.pH)*(yMaxS-yMinS);
+    return { xD, yS };
+  }
+
   function onMouseDown(e){
+    _dragMoved=false;
     const {cx,cy}=getCanvasPos(e);
-    const idx=hitTestCards(cx,cy);
-    if(idx>=0){
-      drag={ptIdx:idx, startMX:e.clientX, startMY:e.clientY,
-             startOX:state.points[idx].cardOffsetX||0, startOY:state.points[idx].cardOffsetY||0};
+    // Point dot drag takes priority — check it first
+    const ptIdx=hitTestPoints(cx,cy);
+    if(ptIdx>=0){
+      drag={ mode:'point', ptIdx,
+             startCX:cx, startCY:cy,
+             origX:state.points[ptIdx].xDisp,
+             origY:state.points[ptIdx].yScaled };
+      canvas.style.cursor='grabbing';
+      e.preventDefault();
+      return;
+    }
+    // Analysis card drag
+    const cardIdx=hitTestCards(cx,cy);
+    if(cardIdx>=0){
+      drag={ mode:'card', ptIdx:cardIdx,
+             startMX:e.clientX, startMY:e.clientY,
+             startOX:state.points[cardIdx].cardOffsetX||0,
+             startOY:state.points[cardIdx].cardOffsetY||0 };
       canvas.style.cursor='grabbing';
       e.preventDefault();
     }
   }
+
   function onMouseMove(e){
     if(!drag) return;
+    _dragMoved=true;
     const r=canvas.getBoundingClientRect();
     const scaleX=canvas.width/r.width, scaleY=canvas.height/r.height;
-    const dx=(e.clientX-drag.startMX)*scaleX, dy=(e.clientY-drag.startMY)*scaleY;
-    state.points[drag.ptIdx].cardOffsetX=drag.startOX+dx;
-    state.points[drag.ptIdx].cardOffsetY=drag.startOY+dy;
-    draw();
+
+    if(drag.mode==='point'){
+      const cx=(e.clientX-r.left)*scaleX;
+      const cy=(e.clientY-r.top)*scaleY;
+      const d=getDims();
+      // Clamp to plot area
+      const clampedCX=Math.max(d.pL,Math.min(d.pL+d.pW,cx));
+      const clampedCY=Math.max(d.pT,Math.min(d.pT+d.pH,cy));
+      const {xD,yS}=canvasToData(clampedCX,clampedCY);
+      const pt=state.points[drag.ptIdx];
+      pt.xDisp=Math.round(xD*10)/10;
+      pt.yScaled=Math.round(yS*10)/10;
+      // If an analysis card is attached, keep it in place relative to the canvas
+      // (cardOffset is already relative to the point, so it follows naturally)
+      draw();
+    } else if(drag.mode==='card'){
+      const dx=(e.clientX-drag.startMX)*scaleX;
+      const dy=(e.clientY-drag.startMY)*scaleY;
+      state.points[drag.ptIdx].cardOffsetX=drag.startOX+dx;
+      state.points[drag.ptIdx].cardOffsetY=drag.startOY+dy;
+      draw();
+    }
   }
+
   function onMouseUp(){
-    if(drag){ drag=null; canvas.style.cursor='crosshair'; }
+    if(drag){
+      // If we just finished dragging a point, refresh the sidebar coords display
+      if(drag.mode==='point') rebuildPointsList();
+      drag=null;
+      canvas.style.cursor='crosshair';
+    }
   }
+
   function onMouseMoveHover(e){
     if(drag) return;
     const {cx,cy}=getCanvasPos(e);
-    canvas.style.cursor=hitTestCards(cx,cy)>=0?'grab':'crosshair';
+    if(hitTestPoints(cx,cy)>=0)      canvas.style.cursor='move';
+    else if(hitTestCards(cx,cy)>=0)  canvas.style.cursor='grab';
+    else                              canvas.style.cursor='crosshair';
   }
 
   // ── POINT MANAGEMENT ──
@@ -1447,14 +1520,15 @@ const SC = (() => {
   }
 
   function onCanvasClick(e){
-    if(drag) return; // was a drag, not a click
+    if(_dragMoved) return; // suppress click if mouse moved during this press
     const r=canvas.getBoundingClientRect();
     const sx=canvas.width/r.width, sy=canvas.height/r.height;
     const cx=(e.clientX-r.left)*sx, cy=(e.clientY-r.top)*sy;
     const d=getDims();
     if(cx<d.pL||cx>d.pL+d.pW||cy<d.pT||cy>d.pT+d.pH) return;
-    // Don't add a point if clicking on a card
+    // Don't add a point if clicking on a card or an existing dot
     if(hitTestCards(cx,cy)>=0) return;
+    if(hitTestPoints(cx,cy)>=0) return;
     const yMinS=state.yMin*state.waterAmount/100, yMaxS=state.yMax*state.waterAmount/100;
     const xD=state.xMin+(cx-d.pL)/d.pW*(state.xMax-state.xMin);
     const yS=yMinS+(1-(cy-d.pT)/d.pH)*(yMaxS-yMinS);
